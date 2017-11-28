@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby
+
+# rubocop:disable Style/AsciiComments
+
+# This script launches a web server on localhost:8345 using ../fixtures as the
+# docroot, and then executes some basic Capybara operations against it using
+# various drivers. The results are printed like this:
+#
+# Warming up --------------------------------------
+#          poltergeist     1.000  i/100ms
+#   selenium_webdriver     1.000  i/100ms
+# Calculating -------------------------------------
+#          poltergeist      7.023  (± 0.0%) i/s -    211.000  in  30.124911s
+#   selenium_webdriver      2.955  (± 0.0%) i/s -     89.000  in  30.134280s
+
+# Comparison:
+#          poltergeist:        7.0 i/s
+#   selenium_webdriver:        3.0 i/s - 2.38x  slower
+
+require "bundler/inline"
+gemfile do
+  source "https://rubygems.org"
+  gem "benchmark-ips"
+  gem "capybara", require: "capybara/dsl"
+  gem "poltergeist", require: "capybara/poltergeist"
+  gem "selenium-webdriver"
+end
+
+PORT = 8345
+
+server_pid = Process.fork do
+  require "webrick"
+  server = WEBrick::HTTPServer.new(
+    Port: PORT,
+    DocumentRoot: File.expand_path("../fixtures", __dir__),
+    Logger: WEBrick::Log.new(open(File::NULL, "w")),
+    AccessLog: [File::NULL, WEBrick::AccessLog::COMMON_LOG_FORMAT]
+  )
+  trap("INT") { server.shutdown }
+  server.start
+end
+at_exit { Process.kill("INT", server_pid) }
+
+Capybara.register_driver :poltergeist do |app|
+  Capybara::Poltergeist::Driver.new(app)
+end
+
+Capybara.register_driver :selenium_webdriver do |app|
+  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+    chrome_options: { "args" => %w[headless] }
+  )
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    desired_capabilities: capabilities
+  )
+end
+
+module CapybaraExample
+  extend Capybara::DSL
+
+  def self.run(driver)
+    Capybara.current_driver = driver
+    Capybara.app_host = "http://localhost:#{PORT}"
+    Capybara.run_server = false
+    visit("css_zen_garden.html")
+    find("li.css-resources").text
+    find_all("nav[role=navigation] a").map { |el| el[:href] }
+    Capybara.reset_sessions!
+  end
+end
+
+Benchmark.ips do |x|
+  x.time = 30
+  x.warmup = 10
+
+  %i[poltergeist selenium_webdriver].each do |driver|
+    x.report(driver.to_s) { CapybaraExample.run(driver) }
+  end
+
+  x.compare!
+end
