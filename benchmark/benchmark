@@ -32,7 +32,7 @@ server_pid = Process.fork do
   require "webrick"
   server = WEBrick::HTTPServer.new(
     Port: PORT,
-    DocumentRoot: File.expand_path("../fixtures", __dir__),
+    DocumentRoot: File.expand_path("fixtures", __dir__),
     Logger: WEBrick::Log.new(open(File::NULL, "w")),
     AccessLog: [File::NULL, WEBrick::AccessLog::COMMON_LOG_FORMAT]
   )
