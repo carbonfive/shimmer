@@ -28,6 +28,7 @@ gemfile do
   gem "capybara", require: "capybara/dsl"
   gem "poltergeist", require: "capybara/poltergeist"
   gem "selenium-webdriver"
+  gem "shimmer", path: ".."
 end
 
 PORT = 8345
@@ -67,6 +68,10 @@ Capybara.register_driver :chrome do |app|
   )
 end
 
+Capybara.register_driver :shimmer do |app|
+  Capybara::Shimmer::Driver.new(app)
+end
+
 module CapybaraExample
   extend Capybara::DSL
 
@@ -85,7 +90,7 @@ Benchmark.ips do |x|
   x.warmup = 10
   x.time = 30
 
-  %i[poltergeist headless_chrome chrome].each do |driver|
+  %i[shimmer poltergeist headless_chrome chrome].each do |driver|
     x.report(driver.to_s) { CapybaraExample.run(driver) }
   end
 
