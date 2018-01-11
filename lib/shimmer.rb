@@ -1,5 +1,5 @@
 require "shimmer/version"
+require "shimmer/driver"
 
 module Shimmer
-  # Your code goes here...
 end
