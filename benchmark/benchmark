@@ -1,5 +1,15 @@
 #!/usr/bin/env ruby
 
+# require 'bundler'
+# Bundler.require(:default, :development)
+require 'selenium/webdriver'
+require 'capybara/dsl'
+require 'capybara/poltergeist'
+require 'benchmark/ips'
+require 'pry'
+
+# binding.pry
+
 # rubocop:disable Style/AsciiComments
 # This script launches a web server on localhost:8345 using ../fixtures as the
 # docroot, and then executes some basic Capybara operations against it using
@@ -19,17 +29,6 @@
 #   headless_chrome:        2.7 i/s - 2.68x  slower
 #            chrome:        2.4 i/s - 2.93x  slower
 # rubocop:enable Style/AsciiComments
-
-require "bundler/inline"
-
-gemfile do
-  source "https://rubygems.org"
-  gem "benchmark-ips"
-  gem "capybara", require: "capybara/dsl"
-  gem "poltergeist", require: "capybara/poltergeist"
-  gem "selenium-webdriver"
-  gem "shimmer", path: ".."
-end
 
 PORT = 8345
 
@@ -90,7 +89,8 @@ Benchmark.ips do |x|
   x.warmup = 10
   x.time = 30
 
-  %i[shimmer poltergeist headless_chrome chrome].each do |driver|
+  %i[poltergeist headless_chrome chrome].each do |driver|
+  # %i[headless_chrome chrome].each do |driver|
     x.report(driver.to_s) { CapybaraExample.run(driver) }
   end
 

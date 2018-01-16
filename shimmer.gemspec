@@ -37,4 +37,14 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.7"
   spec.add_development_dependency "rubocop", "~> 0.52.1"
+
+  # This would be the ideal way to add dev dependencies, but ends
+  # up somehow messing up my chromedriver path. Punting for now, and
+  # inserting dev deps in the Gemfile.
+  #
+  # spec.add_development_dependency "benchmark-ips"
+  # spec.add_development_dependency "capybara"
+  # spec.add_development_dependency "poltergeist"
+  # spec.add_development_dependency "selenium-webdriver"
+  # spec.add_development_dependency "pry-byebug"
 end
