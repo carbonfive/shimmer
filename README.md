@@ -4,6 +4,22 @@ An experimental Capybara driver for headless chrome.
 
 Why? Headless Chrome via Selenium is about 2x slower than Poltergeist, which is a bummer. How fast could it be if we cut out the middleman and talked directly to Chromedriver, or Chrome? The goal of Shimmer is to figure that out.
 
+# Setup
+
+Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-proxy) to see wire traffic over the remote debugging socket.
+
+    $ go get -u github.com/wendigo/chrome-protocol-proxy
+
+# Before running the test suite (benchmark)
+
+   1. Be sure to start up the proxy in a separate window before beginning the benchmark suite.
+
+       $ chrome-protocol-proxy
+
+   (By default, the proxy listens on port 9223 and forwards traffic to the Chrome child process, listening on port 9222)
+
+   2. Be sure to close Google Chrome completely - having any other open Chrome window or process will interfere with the runner.
+
 # Benchmarks
 
 There's a simple benchmark in place...
