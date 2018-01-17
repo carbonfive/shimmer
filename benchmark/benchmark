@@ -1,14 +1,13 @@
 #!/usr/bin/env ruby
 
-# require 'bundler'
-# Bundler.require(:default, :development)
+require 'bundler'
+Bundler.require(:default, :development)
+
 require 'selenium/webdriver'
 require 'capybara/dsl'
 require 'capybara/poltergeist'
 require 'benchmark/ips'
 require 'pry'
-
-# binding.pry
 
 # rubocop:disable Style/AsciiComments
 # This script launches a web server on localhost:8345 using ../fixtures as the
@@ -89,7 +88,7 @@ Benchmark.ips do |x|
   x.warmup = 10
   x.time = 30
 
-  %i[poltergeist headless_chrome chrome].each do |driver|
+  %i[shimmer headless_chrome chrome].each do |driver|
   # %i[headless_chrome chrome].each do |driver|
     x.report(driver.to_s) { CapybaraExample.run(driver) }
   end
