@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 2.4.2"
 
   spec.add_dependency "capybara", "~> 2.16"
+  spec.add_dependency "chrome_remote"
 
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
@@ -42,9 +43,10 @@ Gem::Specification.new do |spec|
   # up somehow messing up my chromedriver path. Punting for now, and
   # inserting dev deps in the Gemfile.
   #
-  # spec.add_development_dependency "benchmark-ips"
-  # spec.add_development_dependency "capybara"
-  # spec.add_development_dependency "poltergeist"
-  # spec.add_development_dependency "selenium-webdriver"
-  # spec.add_development_dependency "pry-byebug"
+  spec.add_development_dependency "benchmark-ips"
+  spec.add_development_dependency "capybara"
+  spec.add_development_dependency "poltergeist"
+  spec.add_development_dependency "selenium-webdriver"
+  spec.add_development_dependency "pry-byebug"
+  spec.add_development_dependency "webdrivers"
 end
