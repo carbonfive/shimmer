@@ -1,30 +1,35 @@
-require "singleton"
 require "socket"
 require "timeout"
 
 module Capybara
   module Shimmer
     class Browser
-      include Singleton
-
       DEVTOOLS_PORT = 9222
       DEVTOOLS_PROXY_PORT = 9223
       DEVTOOLS_HOST = "localhost"
 
-      attr_accessor :browser_pid
+      attr_accessor :browser_pid, :port, :host, :headless
+
+      def initialize(port: DEVTOOLS_PORT, host: DEVTOOLS_HOST, use_proxy: false, headless: false)
+        @port = port
+        @host = host
+        @use_proxy = use_proxy
+        @headless = headless
+      end
 
       def start
-        @browser_pid = Process.spawn "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --remote-debugging-port=#{DEVTOOLS_PORT}"
+        headless_flag = headless ? " --headless" : ""
+        @browser_pid = Process.spawn "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --remote-debugging-port=#{port}#{headless_flag}"
         puts "Booting up Chrome browser with remote debugging port at #{@browser_pid}..."
         register_shutdown_hook
 
-        until is_port_open?(DEVTOOLS_HOST, DEVTOOLS_PORT)
+        until is_port_open?(host, port)
           sleep 1
           puts "."
         end
 
-        client = ChromeRemote.client host: DEVTOOLS_HOST,
-                                     port: DEVTOOLS_PROXY_PORT
+        client = ChromeRemote.client host: host,
+                                     port: @use_proxy ? DEVTOOLS_PROXY_PORT : port
         setup_client(client)
       end
 
@@ -42,6 +47,7 @@ module Capybara
       def setup_client(client)
         client.send_cmd "Network.enable"
         client.send_cmd "Page.enable"
+        client.send_cmd "DOM.enable"
         client.on "Network.requestWillBeSent" do |params|
           puts params["request"]["url"]
         end
