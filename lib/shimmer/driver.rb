@@ -1,13 +1,17 @@
 require "capybara"
+require "chrome_remote"
 require "shimmer/browser"
 
 module Capybara
   module Shimmer
     class Driver < Capybara::Driver::Base
+      attr_reader :client
+
       # rubocop:disable Lint/UnusedMethodArgument
       def initialize(app, options = {})
         @app     = app
         @options = options.dup
+        @client  = Capybara::Shimmer::Browser.instance.start
       end
 
       # def enable_logging
@@ -30,7 +34,10 @@ module Capybara
       end
 
       def visit(path)
-        raise NotImplementedError
+        client.send_cmd "Page.navigate", url: path
+        puts "navigating..."
+        client.wait_for "Network.loadingFinished"
+        puts "done visit"
       end
 
       def refresh
