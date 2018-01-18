@@ -1,57 +1,71 @@
 require "socket"
 require "timeout"
 
+# Manages a Google Chrome process and calls to it through the Google Chrome
+# DevTools API.
 module Capybara
   module Shimmer
     class Browser
+      extend Forwardable
+
       DEVTOOLS_PORT = 9222
       DEVTOOLS_PROXY_PORT = 9223
       DEVTOOLS_HOST = "localhost"
 
-      attr_accessor :browser_pid, :port, :host, :headless
+      attr_accessor :browser_pid, :port, :host, :headless, :client
+      def_delegators :client, :wait_for, :send_cmd
 
       def initialize(port: DEVTOOLS_PORT, host: DEVTOOLS_HOST, use_proxy: false, headless: false)
         @port = port
         @host = host
         @use_proxy = use_proxy
         @headless = headless
+        @client = nil
       end
 
       def start
         headless_flag = headless ? " --headless" : ""
         @browser_pid = Process.spawn "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --remote-debugging-port=#{port}#{headless_flag}"
         puts "Booting up Chrome browser with remote debugging port at #{@browser_pid}..."
-        register_shutdown_hook
+        register_shutdown_hook!
 
         until is_port_open?(host, port)
           sleep 1
           puts "."
         end
 
-        client = ChromeRemote.client host: host,
-                                     port: @use_proxy ? DEVTOOLS_PROXY_PORT : port
-        setup_client(client)
+        setup_client!
+        self
       end
+
+      def reset!
+        client.send_cmd('Page.navigate', url: "about:blank")
+        client.send_cmd("Network.clearBrowserCookies")
+        client.send_cmd('Network.clearBrowserCache')
+      end
+
+      private
 
       def kill!
         Process.kill "INT", @browser_pid
       end
 
-      def register_shutdown_hook
+      def register_shutdown_hook!
         at_exit do
-          puts "Shutting down!"
           kill!
         end
       end
 
-      def setup_client(client)
-        client.send_cmd "Network.enable"
-        client.send_cmd "Page.enable"
-        client.send_cmd "DOM.enable"
-        client.on "Network.requestWillBeSent" do |params|
-          puts params["request"]["url"]
-        end
-        client
+      def setup_client!
+        @client = ChromeRemote.client host: host,
+                                      port: @use_proxy ? DEVTOOLS_PROXY_PORT : port
+        @client.send_cmd "Network.enable"
+        @client.send_cmd "Page.enable"
+        @client.send_cmd "DOM.enable"
+
+        @client.send_cmd('Network.setCacheDisabled', cacheDisabled: true)
+
+        @client
       end
 
       def is_port_open?(ip, port)
