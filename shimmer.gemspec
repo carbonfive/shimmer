@@ -32,7 +32,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 2.4.2"
 
   spec.add_dependency "capybara", "~> 2.16"
-  spec.add_dependency "chrome_remote"
+  # FIXME Once andrewhao/chrome_remote is fixed, move this back to gemspec file
+  # spec.add_dependency "chrome_remote", github: "andrewhao/chrome_remote"
 
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
