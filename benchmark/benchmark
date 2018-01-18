@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require_relative('./fixture_server')
+
 require 'bundler'
 Bundler.require(:default, :development)
 
@@ -29,20 +31,12 @@ require 'pry'
 #            chrome:        2.4 i/s - 2.93x  slower
 # rubocop:enable Style/AsciiComments
 
-PORT = 8345
+fixture_server = FixtureServer.new
+fixture_server.start!
 
-server_pid = Process.fork do
-  require "webrick"
-  server = WEBrick::HTTPServer.new(
-    Port: PORT,
-    DocumentRoot: File.expand_path("fixtures", __dir__),
-    Logger: WEBrick::Log.new(open(File::NULL, "w")),
-    AccessLog: [File::NULL, WEBrick::AccessLog::COMMON_LOG_FORMAT]
-  )
-  trap("INT") { server.shutdown }
-  server.start
-end
-at_exit { Process.kill("INT", server_pid) }
+at_exit {
+  fixture_server.stop!
+}
 
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app)
@@ -79,9 +73,9 @@ FileUtils.mkdir_p('log')
 module CapybaraExample
   extend Capybara::DSL
 
-  def self.run(driver)
+  def self.run(driver, fixture_server)
     Capybara.current_driver = driver
-    Capybara.app_host = "http://localhost:#{PORT}"
+    Capybara.app_host = "http://localhost:#{fixture_server.port}"
     Capybara.run_server = false
     visit("index.html")
     find("li.css-resources").text
@@ -97,7 +91,7 @@ Benchmark.ips do |x|
   %i[headless_shimmer shimmer poltergeist chrome headless_chrome].each do |driver|
   # %i[headless_shimmer poltergeist].each do |driver|
   # %i[headless_chrome chrome].each do |driver|
-    x.report(driver.to_s) { CapybaraExample.run(driver) }
+    x.report(driver.to_s) { CapybaraExample.run(driver, fixture_server) }
   end
 
   x.compare!

@@ -24,11 +24,11 @@ module Capybara
       end
 
       def all_text
-        raise NotImplementedError
+        html
       end
 
       def visible_text
-        attrs.nodeValue
+        html
       end
 
       def [](name)
@@ -79,6 +79,7 @@ module Capybara
       end
 
       def tag_name
+        attrs.nodeName
       end
 
       def visible?
@@ -117,11 +118,16 @@ module Capybara
       def inspect
         %(#<#{self.class} tag="#{tag_name}" path="#{path}">)
       rescue NotSupportedByDriverError
-        %(#<#{self.class} tag="#{tag_name}">)
+        %(#<#{self.class} tag="#{tag_name}"> | #{native})
       end
 
       def ==(other)
         raise NotSupportedByDriverError, 'Capybara::Driver::Node#=='
+      end
+
+      def html
+        result = driver.browser.send_cmd('DOM.getOuterHTML', backendNodeId: attrs.backendNodeId)
+        result.outerHTML
       end
 
       private

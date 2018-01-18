@@ -1,5 +1,19 @@
 require "bundler/setup"
 require "shimmer"
+require "capybara/rspec"
+require "pry"
+require "awesome_print"
+
+require_relative "../benchmark/fixture_server"
+
+fixture_server = FixtureServer.new
+
+Capybara.register_driver :shimmer do |app|
+  Capybara::Shimmer::Driver.new(app, use_proxy: true)
+end
+Capybara.current_driver = :shimmer
+Capybara.app_host = "http://localhost:#{fixture_server.port}"
+Capybara.run_server = false
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -10,5 +24,13 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  config.before :suite do
+    fixture_server.start!
+  end
+
+  config.after :suite do
+    fixture_server.stop!
   end
 end
