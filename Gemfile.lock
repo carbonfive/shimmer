@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/andrewhao/chrome_remote
-  revision: 118686db1f7a75c897e8e597f4b4e869491770c4
+  revision: 5ca888a484a5d48d86d8d528990ecafccb8c5e1d
   branch: event-tweaks
   specs:
     chrome_remote (0.1.0)

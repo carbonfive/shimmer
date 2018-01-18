@@ -9,3 +9,4 @@
 /.rubocop-*
 /.rspec_status
 logs/
+log/

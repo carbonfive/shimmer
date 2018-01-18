@@ -24,9 +24,11 @@ module Capybara
       end
 
       def start
-        headless_flag = headless ? " --headless" : ""
-        @browser_pid = Process.spawn "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --remote-debugging-port=#{port}#{headless_flag}"
-        puts "Booting up Chrome browser with remote debugging port at #{@browser_pid}..."
+        process_command = "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' #{launcher_args.join(" ")}"
+        @browser_pid = Process.spawn process_command, %i[out err] => "log/chrome.#{Time.now.to_f}.log"
+        puts
+        puts process_command
+        puts "Booting up Chrome browser with PID #{@browser_pid}..."
         register_shutdown_hook!
 
         until is_port_open?(host, port)
@@ -80,6 +82,40 @@ module Capybara
         end
 
         false
+      end
+
+      def launcher_args
+        default_args = ["--disable-background-networking",
+                        "--disable-background-timer-throttling",
+                        "--disable-client-side-phishing-detection",
+                        "--disable-default-apps",
+                        "--disable-extensions",
+                        "--disable-hang-monitor",
+                        "--disable-popup-blocking",
+                        "--disable-prompt-on-repost",
+                        "--disable-sync",
+                        "--disable-translate",
+                        "--metrics-recording-only",
+                        "--no-first-run",
+                        "--safebrowsing-disable-auto-update",
+                        "--enable-automation",
+                        "--password-store=basic",
+                        "--use-mock-keychain"]
+
+        headless_args = [
+          "--headless",
+          "--disable-gpu",
+          "--hide-scrollbars",
+          "--mute-audio"
+        ]
+
+        default_args.append("--enable-logging=stdout") if browser_console_logging?
+        default_args.concat(headless_args) if headless
+        default_args.append("--remote-debugging-port=#{port}")
+      end
+
+      def browser_console_logging?
+        true
       end
     end
   end
