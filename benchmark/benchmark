@@ -81,7 +81,7 @@ module CapybaraExample
     Capybara.current_driver = driver
     Capybara.app_host = "http://localhost:#{PORT}"
     Capybara.run_server = false
-    visit("css_zen_garden.html")
+    visit("index.html")
     find("li.css-resources").text
     find_all("nav[role=navigation] a").map { |el| el[:href] }
     Capybara.reset_sessions!
@@ -92,7 +92,7 @@ Benchmark.ips do |x|
   x.warmup = 10
   x.time = 30
 
-  %i[shimmer headless_chrome headless_shimmer].each do |driver|
+  %i[headless_shimmer shimmer poltergeist chrome headless_chrome].each do |driver|
   # %i[shimmer poltergeist headless_chrome chrome].each do |driver|
   # %i[headless_chrome chrome].each do |driver|
     x.report(driver.to_s) { CapybaraExample.run(driver) }

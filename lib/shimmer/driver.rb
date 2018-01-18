@@ -11,7 +11,7 @@ module Capybara
       def initialize(app, options = {})
         @app     = app
         @options = options.dup
-        @browser  = Capybara::Shimmer::Browser.new(@options).start
+        @browser = Capybara::Shimmer::Browser.new(@options).start
       end
 
       # def enable_logging
@@ -35,7 +35,11 @@ module Capybara
 
       def visit(path)
         browser.send_cmd "Page.navigate", url: path
-        browser.wait_for "Page.lifecycleEvent", match: {"name" => "firstMeaningfulPaintCandidate"}
+        # browser.wait_for "Page.lifecycleEvent", match: {"name" => "firstMeaningfulPaint"}
+
+        browser.wait_for_with_either_match("Page.lifecycleEvent",
+                                           match: { "name" => "load" },
+                                           match2: { "name" => "networkIdle" })
       end
 
       def visit_immediate!(path)
@@ -53,8 +57,8 @@ module Capybara
       def find_css(query)
         root_node = browser.send_cmd("DOM.getDocument")
         root_node_id = root_node["root"]["nodeId"]
-        results = browser.send_cmd('DOM.querySelectorAll', selector: query, nodeId: root_node_id)["nodeIds"].map do |nodeId| 
-          raw = browser.send_cmd('DOM.describeNode', nodeId: nodeId)
+        results = browser.send_cmd("DOM.querySelectorAll", selector: query, nodeId: root_node_id)["nodeIds"].map do |nodeId|
+          raw = browser.send_cmd("DOM.describeNode", nodeId: nodeId)
           Capybara::Shimmer::Node.new(self, raw)
         end
         results

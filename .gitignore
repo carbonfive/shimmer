@@ -8,3 +8,4 @@
 /tmp/
 /.rubocop-*
 /.rspec_status
+logs/

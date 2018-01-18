@@ -18,11 +18,6 @@ module Capybara
         @native = native
       end
 
-      def attrs
-        native["node"]
-      end
-
-
       def all_text
         raise NotImplementedError
       end
@@ -123,6 +118,12 @@ module Capybara
 
       def ==(other)
         raise NotSupportedByDriverError, 'Capybara::Driver::Node#=='
+      end
+
+      private
+
+      def attrs
+        native["node"]
       end
     end
   end

@@ -13,7 +13,7 @@ module Capybara
       DEVTOOLS_HOST = "localhost"
 
       attr_accessor :browser_pid, :port, :host, :headless, :client
-      def_delegators :client, :wait_for, :send_cmd
+      def_delegators :client, :wait_for, :send_cmd, :wait_for_with_either_match
 
       def initialize(port: DEVTOOLS_PORT, host: DEVTOOLS_HOST, use_proxy: false, headless: false)
         @port = port
@@ -39,9 +39,8 @@ module Capybara
       end
 
       def reset!
-        client.send_cmd('Page.navigate', url: "about:blank")
+        client.send_cmd("Page.navigate", url: "about:blank")
         client.send_cmd("Network.clearBrowserCookies")
-        client.send_cmd('Network.clearBrowserCache')
       end
 
       private
@@ -62,8 +61,6 @@ module Capybara
         @client.send_cmd "Network.enable"
         @client.send_cmd "Page.enable"
         @client.send_cmd "DOM.enable"
-
-        @client.send_cmd('Network.setCacheDisabled', cacheDisabled: true)
 
         @client
       end
