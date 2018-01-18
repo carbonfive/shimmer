@@ -67,7 +67,7 @@ Capybara.register_driver :chrome do |app|
 end
 
 Capybara.register_driver :shimmer do |app|
-  Capybara::Shimmer::Driver.new(app, use_proxy: false, port: 9228)
+  Capybara::Shimmer::Driver.new(app, use_proxy: true)
 end
 
 Capybara.register_driver :headless_shimmer do |app|
@@ -95,7 +95,7 @@ Benchmark.ips do |x|
   x.time = 30
 
   %i[headless_shimmer shimmer poltergeist chrome headless_chrome].each do |driver|
-  # %i[shimmer poltergeist headless_chrome chrome].each do |driver|
+  # %i[headless_shimmer poltergeist].each do |driver|
   # %i[headless_chrome chrome].each do |driver|
     x.report(driver.to_s) { CapybaraExample.run(driver) }
   end

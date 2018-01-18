@@ -89,7 +89,10 @@ module Capybara
       end
 
       def save_screenshot(path, **options)
-        raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#save_screenshot"
+        result = browser.send_cmd("Page.captureScreenshot")
+        File.open(path, 'w') do |file|
+          file.write Base64.decode64(result.data)
+        end
       end
 
       def response_headers

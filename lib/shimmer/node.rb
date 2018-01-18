@@ -1,12 +1,17 @@
+# A representation of a single DOM node
+#
+# A DOMNode type in DevTools Protocol follows this schema:
+#
 # {"node"=>
-# {"nodeId"=>0,
-#  "backendNodeId"=>26,
-#  "nodeType"=>1,
-#  "nodeName"=>"LI",
-#  "localName"=>"li",
-#  "nodeValue"=>"",
-#  "childNodeCount"=>1,
-#  "attributes"=>["class", "css-resources"]}}
+#   {"nodeId"=>0,
+#    "backendNodeId"=>26,
+#    "nodeType"=>1,
+#    "nodeName"=>"LI",
+#    "localName"=>"li",
+#    "nodeValue"=>"",
+#    "childNodeCount"=>1,
+#    "attributes"=>["class", "css-resources"]}}
+#
 module Capybara
   module Shimmer
     class Node < Capybara::Driver::Node
@@ -23,16 +28,16 @@ module Capybara
       end
 
       def visible_text
-        attrs["nodeValue"]
+        attrs.nodeValue
       end
 
       def [](name)
-        attributes = Hash[*attrs["attributes"]].symbolize_keys
+        attributes = Hash[*attrs.attributes].symbolize_keys
         attributes[name]
       end
 
       def value
-        raise NotImplementedError
+        self[:value]
       end
 
       # @param value String or Array. Array is only allowed if node has 'multiple' attribute
@@ -74,7 +79,6 @@ module Capybara
       end
 
       def tag_name
-        raise NotImplementedError
       end
 
       def visible?

@@ -85,22 +85,31 @@ module Capybara
       end
 
       def launcher_args
-        default_args = ["--disable-background-networking",
-                        "--disable-background-timer-throttling",
-                        "--disable-client-side-phishing-detection",
-                        "--disable-default-apps",
-                        "--disable-extensions",
-                        "--disable-hang-monitor",
-                        "--disable-popup-blocking",
-                        "--disable-prompt-on-repost",
-                        "--disable-sync",
-                        "--disable-translate",
-                        "--metrics-recording-only",
-                        "--no-first-run",
-                        "--safebrowsing-disable-auto-update",
-                        "--enable-automation",
-                        "--password-store=basic",
-                        "--use-mock-keychain"]
+        # As great as these defaults are, they cause headed shimmer to run
+        # INCREDIBLY slow. We can re-enable these as needed in the future.
+        #
+        # These are default args provided by the puppeteer project.
+        #
+        # default_args = ["--disable-background-networking",
+        #                 "--disable-background-timer-throttling",
+        #                 "--disable-client-side-phishing-detection",
+        #                 "--disable-default-apps",
+        #                 "--disable-extensions",
+        #                 "--disable-hang-monitor",
+        #                 "--disable-popup-blocking",
+        #                 "--disable-prompt-on-repost",
+        #                 "--disable-sync",
+        #                 "--disable-translate",
+        #                 "--metrics-recording-only",
+        #                 "--no-first-run",
+        #                 "--safebrowsing-disable-auto-update",
+        #                 "--enable-automation",
+        #                 "--password-store=basic",
+        #                 "--use-mock-keychain"]
+
+        default_args = [
+          "--enable-automation"
+        ]
 
         headless_args = [
           "--headless",
