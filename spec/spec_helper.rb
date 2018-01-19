@@ -3,15 +3,33 @@ require "shimmer"
 require "capybara/rspec"
 require "pry"
 require "awesome_print"
+require 'selenium/webdriver'
+require 'capybara/poltergeist'
 
 require_relative "../benchmark/fixture_server"
 
 fixture_server = FixtureServer.new
 
 Capybara.register_driver :shimmer do |app|
-  Capybara::Shimmer::Driver.new(app, use_proxy: true)
+  Capybara::Shimmer::Driver.new(app, use_proxy: true, headless: true)
 end
+
+Capybara.register_driver :headless_chrome do |app|
+  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+    chrome_options: { "args" => %w[headless] }
+  )
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    desired_capabilities: capabilities
+  )
+end
+
+# Capybara.current_driver = :poltergeist
+# Capybara.default_driver = :poltergeist
 Capybara.current_driver = :shimmer
+Capybara.default_driver = :shimmer
+
 Capybara.app_host = "http://localhost:#{fixture_server.port}"
 Capybara.run_server = false
 

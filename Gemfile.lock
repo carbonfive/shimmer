@@ -12,6 +12,7 @@ PATH
   specs:
     shimmer (0.1.0)
       capybara (~> 2.16)
+      nokogiri (~> 1.8.1)
 
 GEM
   remote: https://rubygems.org/

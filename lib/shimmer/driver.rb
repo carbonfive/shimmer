@@ -5,7 +5,7 @@ require "shimmer/browser"
 module Capybara
   module Shimmer
     class Driver < Capybara::Driver::Base
-      attr_reader :browser
+      attr_reader :browser, :options
 
       # rubocop:disable Lint/UnusedMethodArgument
       def initialize(app, options = {})
@@ -51,21 +51,24 @@ module Capybara
       end
 
       def find_xpath(query)
-        raise NotImplementedError
+        Nokogiri::HTML(html)
+          .xpath(query)
+          .map do |node|
+          Capybara::Shimmer::Node.new(self, node)
+        end
       end
 
       def find_css(query)
-        root_node = browser.send_cmd("DOM.getDocument")
-        root_node_id = root_node["root"]["nodeId"]
-        results = browser.send_cmd("DOM.querySelectorAll", selector: query, nodeId: root_node_id)["nodeIds"].map do |nodeId|
-          raw = browser.send_cmd("DOM.describeNode", nodeId: nodeId)
-          Capybara::Shimmer::Node.new(self, raw)
+        Nokogiri::HTML(html)
+          .css(query)
+          .map do |node|
+          Capybara::Shimmer::Node.new(self, node)
         end
-        results
       end
 
       def html
-        raise NotImplementedError
+        root_node = browser.send_cmd("DOM.getDocument")
+        browser.send_cmd("DOM.getOuterHTML", backendNodeId: root_node.root.backendNodeId).outerHTML
       end
 
       def go_back
@@ -90,7 +93,7 @@ module Capybara
 
       def save_screenshot(path, **options)
         result = browser.send_cmd("Page.captureScreenshot")
-        File.open(path, 'w') do |file|
+        File.open(path, "w") do |file|
           file.write Base64.decode64(result.data)
         end
       end
