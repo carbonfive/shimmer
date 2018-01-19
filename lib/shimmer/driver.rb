@@ -6,8 +6,6 @@ module Capybara
   module Shimmer
     class Driver < Capybara::Driver::Base
       attr_reader :browser, :options
-
-      # rubocop:disable Lint/UnusedMethodArgument
       def initialize(app, options = {})
         supplied_browser = options.delete(:browser)
         @options = options.dup
@@ -36,16 +34,30 @@ module Capybara
       end
 
       def find_css(query)
-        Nokogiri::HTML(html)
-          .css(query)
-          .map do |node|
-          Capybara::Shimmer::Node.new(self, node)
+        # Nokogiri::HTML(html)
+        #   .css(query)
+        #   .map do |node|
+        #   Capybara::Shimmer::Node.new(self, node)
+        # end
+
+        root_node_id = browser.root_node_id
+        results = browser.send_cmd(
+          "DOM.querySelectorAll",
+          selector: query, nodeId: root_node_id
+        ).nodeIds.map do |node_id|
+          html = browser.html_for(node_id: node_id)
+          nokogiri_element = nokogiri_htmlize(html)
+          Capybara::Shimmer::Node.new(self, nokogiri_element, devtools_node_id: node_id)
         end
+      end
+
+      def nokogiri_htmlize(html_string)
+        Nokogiri::HTML.fragment(html_string).children.first
       end
 
       def html
         root_node = browser.send_cmd("DOM.getDocument")
-        browser.send_cmd("DOM.getOuterHTML", backendNodeId: root_node.root.backendNodeId).outerHTML
+        browser.html_for(backend_node_id: root_node.root.backendNodeId)
       end
 
       def go_back
@@ -56,19 +68,19 @@ module Capybara
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#go_forward"
       end
 
-      def execute_script(script, *args)
+      def execute_script(_script, *_args)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#execute_script"
       end
 
-      def evaluate_script(script, *args)
+      def evaluate_script(_script, *_args)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#evaluate_script"
       end
 
-      def evaluate_async_script(script, *args)
+      def evaluate_async_script(_script, *_args)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#evaluate_script_asnyc"
       end
 
-      def save_screenshot(path, **options)
+      def save_screenshot(path, **_options)
         result = browser.send_cmd("Page.captureScreenshot")
         File.open(path, "w") do |file|
           file.write Base64.decode64(result.data)
@@ -87,7 +99,7 @@ module Capybara
       #
       # @param frame [Capybara::Node::Element, :parent, :top]  The iframe element to switch to
       #
-      def switch_to_frame(frame)
+      def switch_to_frame(_frame)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#switch_to_frame"
       end
 
@@ -95,19 +107,19 @@ module Capybara
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#current_window_handle"
       end
 
-      def window_size(handle)
+      def window_size(_handle)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#window_size"
       end
 
-      def resize_window_to(handle, width, height)
+      def resize_window_to(_handle, _width, _height)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#resize_window_to"
       end
 
-      def maximize_window(handle)
+      def maximize_window(_handle)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#maximize_current_window"
       end
 
-      def close_window(handle)
+      def close_window(_handle)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#close_window"
       end
 
@@ -119,7 +131,7 @@ module Capybara
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#open_new_window"
       end
 
-      def switch_to_window(handle)
+      def switch_to_window(_handle)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#switch_to_window"
       end
 
@@ -137,7 +149,7 @@ module Capybara
       # @return [String]  the message shown in the modal
       # @raise [Capybara::ModalNotFound]  if modal dialog hasn't been found
       #
-      def accept_modal(type, **options)
+      def accept_modal(_type, **_options)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#accept_modal"
       end
 
@@ -150,7 +162,7 @@ module Capybara
       # @return [String]  the message shown in the modal
       # @raise [Capybara::ModalNotFound]  if modal dialog hasn't been found
       #
-      def dismiss_modal(type, **options)
+      def dismiss_modal(_type, **_options)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#dismiss_modal"
       end
 

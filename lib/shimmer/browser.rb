@@ -44,6 +44,25 @@ module Capybara
           .value
       end
 
+      def root_node_id
+        client
+          .send_cmd("DOM.getDocument")
+          .root
+          .nodeId
+      end
+
+      def html_for(backend_node_id: nil, node_id: nil)
+        options = if backend_node_id
+                    { backendNodeId: backend_node_id }
+                  else
+                    { nodeId: node_id }
+                  end
+
+        client
+          .send_cmd("DOM.getOuterHTML", **options)
+          .outerHTML
+      end
+
       private
 
       def setup_client!
