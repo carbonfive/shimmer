@@ -4,8 +4,10 @@ require "bundler/setup"
 require "shimmer"
 require "pry"
 
+is_headless = ARGV[0] == "--headless"
+puts ARGV
 Capybara.register_driver :shimmer do |app|
-  Capybara::Shimmer::Driver.new(app, use_proxy: true)
+  Capybara::Shimmer::Driver.new(app, use_proxy: true, headless: is_headless)
 end
 Capybara.current_driver = :shimmer
 Capybara.default_driver = :shimmer
