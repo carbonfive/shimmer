@@ -2,13 +2,18 @@
 
 require "bundler/setup"
 require "shimmer"
+require "pry"
 
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
+Capybara.register_driver :shimmer do |app|
+  Capybara::Shimmer::Driver.new(app, use_proxy: true)
+end
+Capybara.current_driver = :shimmer
+Capybara.default_driver = :shimmer
 
-# (If you use this, don't forget to add pry to your Gemfile!)
-# require "pry"
-# Pry.start
+page = Capybara.current_session
+driver = page.driver
+driver.visit('http://www.csszengarden.com')
+Pry.start
 
 require "irb"
 IRB.start(__FILE__)
