@@ -7,11 +7,15 @@
 module Capybara
   module Shimmer
     class Node < Capybara::RackTest::Node
-      attr_reader :devtools_node_id
+      attr_reader :devtools_node_id, :devtools_backend_node_id
 
-      def initialize(driver, native, devtools_node_id: nil)
+      def initialize(driver, native, devtools_node_id: nil, devtools_backend_node_id: nil)
         super(driver, native)
         @devtools_node_id = devtools_node_id
+        @devtools_backend_node_id = devtools_backend_node_id
+        if devtools_node_id.nil?
+
+        end
       end
 
       def click

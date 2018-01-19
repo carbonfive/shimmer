@@ -4,8 +4,13 @@ require "shimmer/browser"
 
 module Capybara
   module Shimmer
+    class JavascriptEvaluationError < StandardError
+    end
+
     class Driver < Capybara::Driver::Base
       attr_reader :browser, :options
+      extend Forwardable
+
       def initialize(app, options = {})
         supplied_browser = options.delete(:browser)
         @options = options.dup
@@ -13,47 +18,13 @@ module Capybara
         @app     = app
       end
 
-      def current_url
-        browser.current_url
-      end
-
-      def visit(path)
-        browser.visit(path)
-      end
+      def_delegators :browser, :current_url, :visit
 
       def refresh
         raise NotImplementedError
       end
 
-      def find_xpath(query)
-        Nokogiri::HTML(html)
-          .xpath(query)
-          .map do |node|
-          Capybara::Shimmer::Node.new(self, node)
-        end
-      end
-
-      def find_css(query)
-        # Nokogiri::HTML(html)
-        #   .css(query)
-        #   .map do |node|
-        #   Capybara::Shimmer::Node.new(self, node)
-        # end
-
-        root_node_id = browser.root_node_id
-        results = browser.send_cmd(
-          "DOM.querySelectorAll",
-          selector: query, nodeId: root_node_id
-        ).nodeIds.map do |node_id|
-          html = browser.html_for(node_id: node_id)
-          nokogiri_element = nokogiri_htmlize(html)
-          Capybara::Shimmer::Node.new(self, nokogiri_element, devtools_node_id: node_id)
-        end
-      end
-
-      def nokogiri_htmlize(html_string)
-        Nokogiri::HTML.fragment(html_string).children.first
-      end
+      def_delegators :finder, :find_xpath, :find_css
 
       def html
         root_node = browser.send_cmd("DOM.getDocument")
@@ -68,12 +39,18 @@ module Capybara
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#go_forward"
       end
 
-      def execute_script(_script, *_args)
-        raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#execute_script"
+      def execute_script(script, return_by_value: false)
+        evaluate_script(script, return_by_value: return_by_value)
       end
 
-      def evaluate_script(_script, *_args)
-        raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#evaluate_script"
+      def evaluate_script(script, return_by_value: true)
+        returned = browser.send_cmd("Runtime.evaluate", expression: script, returnByValue: return_by_value, awaitPromise: true)
+        raise JavascriptEvaluationError, returned.exceptionDetails.exception if returned.exceptionDetails
+        if return_by_value
+          returned.result.value
+        else
+          returned.result
+        end
       end
 
       def evaluate_async_script(_script, *_args)
@@ -184,6 +161,13 @@ module Capybara
 
       def session_options
       end
+
+      private
+
+      def finder
+        @finder ||= Finder.new(self)
+      end
+
       # rubocop:enable Lint/UnusedMethodArgument
     end
   end
