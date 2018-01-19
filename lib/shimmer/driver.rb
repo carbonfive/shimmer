@@ -9,41 +9,18 @@ module Capybara
 
       # rubocop:disable Lint/UnusedMethodArgument
       def initialize(app, options = {})
-        @app     = app
+        supplied_browser = options.delete(:browser)
         @options = options.dup
-        @browser = Capybara::Shimmer::Browser.new(@options).start
+        @browser = supplied_browser || Capybara::Shimmer::Browser.new(@options).start
+        @app     = app
       end
 
-      # def enable_logging
-      # end
-      #
-      # def allow_url(url)
-      # end
-      #
-      # def block_url(url)
-      # end
-      #
-      # def block_unknown_urls
-      # end
-      #
-      # def allow_unknown_urls
-      # end
-
       def current_url
-        raise NotImplementedError
+        browser.current_url
       end
 
       def visit(path)
-        browser.send_cmd "Page.navigate", url: path
-        # browser.wait_for "Page.lifecycleEvent", match: {"name" => "firstMeaningfulPaint"}
-
-        browser.wait_for_with_either_match("Page.lifecycleEvent",
-                                           match: { "name" => "load" },
-                                           match2: { "name" => "networkIdle" })
-      end
-
-      def visit_immediate!(path)
-        browser.send_cmd "Page.navigate", url: path
+        browser.visit(path)
       end
 
       def refresh

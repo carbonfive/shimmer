@@ -61,7 +61,7 @@ Capybara.register_driver :chrome do |app|
 end
 
 Capybara.register_driver :shimmer do |app|
-  Capybara::Shimmer::Driver.new(app, use_proxy: true)
+  Capybara::Shimmer::Driver.new(app, use_proxy: false, port: 9228)
 end
 
 Capybara.register_driver :headless_shimmer do |app|
