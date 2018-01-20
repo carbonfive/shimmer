@@ -23,12 +23,14 @@ module Capybara
                          x: center_coordinates.x,
                          y: center_coordinates.y,
                          type: "mouseMoved")
+        sleep(0.25)
         browser.send_cmd("Input.dispatchMouseEvent",
                          x: center_coordinates.x,
                          y: center_coordinates.y,
                          button: 'left',
                          clickCount: 1,
                          type: "mousePressed")
+        sleep(0.25)
         browser.send_cmd("Input.dispatchMouseEvent",
                          x: center_coordinates.x,
                          y: center_coordinates.y,
@@ -50,7 +52,7 @@ module Capybara
       end
 
       def box_model
-        @box_model ||= browser.send_cmd("DOM.getBoxModel", nodeId: devtools_node_id).model
+        @box_model ||= browser.send_cmd("DOM.getBoxModel", backendNodeId: devtools_backend_node_id).model
       end
 
       def center_coordinates
