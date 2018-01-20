@@ -14,7 +14,7 @@ Capybara.default_driver = :shimmer
 
 page = Capybara.current_session
 driver = page.driver
-driver.visit('http://www.csszengarden.com')
+driver.visit("http://www.csszengarden.com")
 Pry.start
 
 require "irb"

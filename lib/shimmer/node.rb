@@ -7,6 +7,9 @@
 module Capybara
   module Shimmer
     class Node < Capybara::RackTest::Node
+      MOUSE_MOVE_DELAY = 0.25
+      MOUSE_CLICK_DELAY = 0.25
+
       attr_reader :devtools_node_id, :devtools_backend_node_id
 
       def initialize(driver, native, devtools_node_id: nil, devtools_backend_node_id: nil)
@@ -23,18 +26,18 @@ module Capybara
                          x: center_coordinates.x,
                          y: center_coordinates.y,
                          type: "mouseMoved")
-        sleep(0.25)
+        sleep(MOUSE_MOVE_DELAY)
         browser.send_cmd("Input.dispatchMouseEvent",
                          x: center_coordinates.x,
                          y: center_coordinates.y,
-                         button: 'left',
+                         button: "left",
                          clickCount: 1,
                          type: "mousePressed")
-        sleep(0.25)
+        sleep(MOUSE_CLICK_DELAY)
         browser.send_cmd("Input.dispatchMouseEvent",
                          x: center_coordinates.x,
                          y: center_coordinates.y,
-                         button: 'left',
+                         button: "left",
                          clickCount: 1,
                          type: "mouseReleased")
       end

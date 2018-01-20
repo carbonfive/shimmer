@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 
-require_relative('./fixture_server')
+require_relative("./fixture_server")
 
-require 'bundler'
+require "bundler"
 Bundler.require(:default, :development)
 
-require 'selenium/webdriver'
-require 'capybara/dsl'
-require 'capybara/poltergeist'
-require 'benchmark/ips'
-require 'pry'
+require "selenium/webdriver"
+require "capybara/dsl"
+require "capybara/poltergeist"
+require "benchmark/ips"
+require "pry"
 
 # rubocop:disable Style/AsciiComments
 # This script launches a web server on localhost:8345 using ../fixtures as the
@@ -34,9 +34,9 @@ require 'pry'
 fixture_server = FixtureServer.new
 fixture_server.start!
 
-at_exit {
+at_exit do
   fixture_server.stop!
-}
+end
 
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app)
@@ -68,7 +68,7 @@ Capybara.register_driver :headless_shimmer do |app|
   Capybara::Shimmer::Driver.new(app, headless: true, use_proxy: false, port: 9229)
 end
 
-FileUtils.mkdir_p('log')
+FileUtils.mkdir_p("log")
 
 module CapybaraExample
   extend Capybara::DSL
@@ -89,8 +89,8 @@ Benchmark.ips do |x|
   x.time = 30
 
   %i[headless_shimmer shimmer poltergeist chrome headless_chrome].each do |driver|
-  # %i[headless_shimmer poltergeist].each do |driver|
-  # %i[headless_chrome chrome].each do |driver|
+    # %i[headless_shimmer poltergeist].each do |driver|
+    # %i[headless_chrome chrome].each do |driver|
     x.report(driver.to_s) { CapybaraExample.run(driver, fixture_server) }
   end
 

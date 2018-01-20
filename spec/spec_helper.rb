@@ -3,8 +3,8 @@ require "shimmer"
 require "capybara/rspec"
 require "pry"
 require "awesome_print"
-require 'selenium/webdriver'
-require 'capybara/poltergeist'
+require "selenium/webdriver"
+require "capybara/poltergeist"
 
 require_relative "../benchmark/fixture_server"
 

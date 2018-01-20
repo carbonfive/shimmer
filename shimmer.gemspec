@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "capybara", "~> 2.16"
   spec.add_dependency "nokogiri", "~> 1.8.1"
-  # FIXME Once andrewhao/chrome_remote is fixed, move this back to gemspec file
+  # FIXME: Once andrewhao/chrome_remote is fixed, move this back to gemspec file
   # spec.add_dependency "chrome_remote", github: "andrewhao/chrome_remote"
 
   spec.add_development_dependency "bundler", "~> 1.16"
@@ -45,11 +45,11 @@ Gem::Specification.new do |spec|
   # up somehow messing up my chromedriver path. Punting for now, and
   # inserting dev deps in the Gemfile.
   #
+  spec.add_development_dependency "awesome_print"
   spec.add_development_dependency "benchmark-ips"
   spec.add_development_dependency "capybara"
   spec.add_development_dependency "poltergeist"
-  spec.add_development_dependency "selenium-webdriver"
   spec.add_development_dependency "pry-byebug"
-  spec.add_development_dependency "awesome_print"
+  spec.add_development_dependency "selenium-webdriver"
   spec.add_development_dependency "webdrivers"
 end
