@@ -35,7 +35,11 @@ module Capybara
           backend_node_id = devtools_node_props.backendNodeId
           html_fragment = browser.html_for(backend_node_id: backend_node_id)
           nokogiri_element = nokogiri_htmlize(html_fragment)
-          Capybara::Shimmer::Node.new(self, nokogiri_element, devtools_node_id: node_id, devtools_backend_node_id: backend_node_id)
+          Capybara::Shimmer::Node.new(self,
+                                      nokogiri_element,
+                                      devtools_node_id: node_id,
+                                      devtools_backend_node_id: backend_node_id,
+                                      devtools_remote_object_id: nodeObjectId)
         end
       end
 
@@ -56,6 +60,36 @@ module Capybara
       end
 
       def find_css(query)
+        query_fn = "
+        (function(selector, element) {
+          return element.querySelectorAll(selector);
+        })(#{query.inspect}, document)
+        "
+        array_result = driver.evaluate_script(query_fn, return_by_value: false)
+        browser
+          .send_cmd("Runtime.getProperties", objectId: array_result.objectId, ownProperties: true)
+          .result
+          .flatten
+          .map(&:value)
+          .select { |node| node.type == "object" && node.subtype == "node" }
+          .map(&:objectId)
+          .map do |nodeObjectId|
+          devtools_node_props = browser.send_cmd("DOM.describeNode", objectId: nodeObjectId).node
+          node_id = devtools_node_props.nodeId
+          backend_node_id = devtools_node_props.backendNodeId
+          html_fragment = browser.html_for(backend_node_id: backend_node_id)
+          nokogiri_element = nokogiri_htmlize(html_fragment)
+          Capybara::Shimmer::Node.new(self,
+                                      nokogiri_element,
+                                      devtools_node_id: node_id,
+                                      devtools_backend_node_id: backend_node_id,
+                                      devtools_remote_object_id: nodeObjectId)
+        end
+      end
+
+      # LIMITATION: will not return to you a RemoteObjectId, which limits
+      # how many properties you can return from the node.
+      def find_css_with_direct_query_selector(query)
         root_node_id = browser.root_node_id
         results = browser.send_cmd(
           "DOM.querySelectorAll",

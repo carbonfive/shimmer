@@ -15,7 +15,8 @@ RSpec.describe "form filling", type: :feature do
 
       it "sets value" do
         find(selector).set("Foobar")
-        expect(find(selector).value).to eq "Foobar"
+        updated_result = find(selector)
+        expect(updated_result.value).to eq "Foobar"
       end
     end
   end

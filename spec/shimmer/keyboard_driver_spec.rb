@@ -28,17 +28,4 @@ RSpec.describe Capybara::Shimmer::KeyboardDriver do
       subject.send_character("q")
     end
   end
-
-  describe "#key_down" do
-    it "sends a keycode event over the DevTools protocol" do
-      pending "Not required yet - for modifier keys"
-      expect(browser)
-        .to receive(:send_cmd)
-        .with("Input.dispatchKeyEvent",
-              type: :keyDown,
-              text: "q")
-
-      subject.key_down("KeyQ")
-    end
-  end
 end

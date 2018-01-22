@@ -7,15 +7,24 @@
 module Capybara
   module Shimmer
     class Node < Capybara::RackTest::Node
-      attr_reader :devtools_node_id, :devtools_backend_node_id
+      attr_reader :devtools_node_id, :devtools_backend_node_id, :devtools_remote_object_id
 
-      def initialize(driver, native, devtools_node_id: nil, devtools_backend_node_id: nil)
+      def initialize(driver,
+                     native,
+                     devtools_node_id: nil,
+                     devtools_backend_node_id: nil,
+                     devtools_remote_object_id: nil)
         super(driver, native)
         @devtools_node_id = devtools_node_id
         @devtools_backend_node_id = devtools_backend_node_id
+        @devtools_remote_object_id = devtools_remote_object_id
         if devtools_node_id.nil?
 
         end
+      end
+
+      def value
+        javascript_bridge.evaluate_js('function() { return this.value }')
       end
 
       def click
@@ -42,10 +51,18 @@ module Capybara
         # elsif textarea?
         #   native['_capybara_raw_value'] = value.to_s
         # end
-        #
-        click # eventually replace with `focus`
-        click # eventually replace with `focus`
+
+        focus!
+        select!
         keyboard_driver.type(value)
+      end
+
+      def focus!
+        javascript_bridge.evaluate_js('function() { return this.focus() }')
+      end
+
+      def select!
+        javascript_bridge.evaluate_js('function() { return this.select() }')
       end
 
       def box_model
@@ -69,6 +86,10 @@ module Capybara
       end
 
       private
+
+      def javascript_bridge
+        @javascript_bridge ||= JavascriptBridge.new(browser, devtools_remote_object_id: devtools_remote_object_id)
+      end
 
       def mouse_driver
         @mouse_driver ||= MouseDriver.new(browser)

@@ -6,6 +6,7 @@ require "shimmer/launcher"
 require "shimmer/finder"
 require "shimmer/keyboard_driver"
 require "shimmer/mouse_driver"
+require "shimmer/javascript_bridge"
 
 module Shimmer
 end
