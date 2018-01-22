@@ -14,6 +14,8 @@ module Capybara
       end
 
       def start
+        FileUtils.mkdir_p("log")
+
         process_command = "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' #{launcher_args.join(" ")}"
         @browser_pid = Process.spawn process_command, %i[out err] => "log/chrome.#{Time.now.to_f}.log"
         puts

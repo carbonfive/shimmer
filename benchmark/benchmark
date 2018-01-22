@@ -68,8 +68,6 @@ Capybara.register_driver :headless_shimmer do |app|
   Capybara::Shimmer::Driver.new(app, headless: true, use_proxy: false, port: 9229)
 end
 
-FileUtils.mkdir_p("log")
-
 module CapybaraExample
   extend Capybara::DSL
 
