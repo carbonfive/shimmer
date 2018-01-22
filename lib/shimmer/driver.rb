@@ -59,7 +59,7 @@ module Capybara
 
       def save_screenshot(path, **_options)
         result = browser.send_cmd("Page.captureScreenshot")
-        File.open(path, "w") do |file|
+        File.open(path, "wb") do |file|
           file.write Base64.decode64(result.data)
         end
       end

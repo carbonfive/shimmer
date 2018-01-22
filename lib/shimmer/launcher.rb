@@ -1,8 +1,7 @@
 require "socket"
 require "timeout"
 
-# Manages a Google Chrome process and calls to it through the Google Chrome
-# DevTools API.
+# Manages a Google Chrome process and calls to it through the Google Chrome DevTools API.
 module Capybara
   module Shimmer
     class Launcher
