@@ -9,12 +9,12 @@ RSpec.describe Capybara::Shimmer::Node do
 
   describe '#set' do
     context 'when a text node' do
-      it 'delegates to the InputDriver' do
+      it 'delegates to the KeyboardDriver' do
         expect_any_instance_of(Capybara::Shimmer::MouseDriver)
           .to receive(:click)
           .with(subject)
 
-        expect_any_instance_of(Capybara::Shimmer::InputDriver)
+        expect_any_instance_of(Capybara::Shimmer::KeyboardDriver)
           .to receive(:type)
           .with('hello')
         subject.set('hello')
