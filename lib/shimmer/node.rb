@@ -7,9 +7,6 @@
 module Capybara
   module Shimmer
     class Node < Capybara::RackTest::Node
-      MOUSE_MOVE_DELAY = 0.25
-      MOUSE_CLICK_DELAY = 0.25
-
       attr_reader :devtools_node_id, :devtools_backend_node_id
 
       def initialize(driver, native, devtools_node_id: nil, devtools_backend_node_id: nil)
@@ -22,27 +19,38 @@ module Capybara
       end
 
       def click
-        browser.send_cmd("Input.dispatchMouseEvent",
-                         x: center_coordinates.x,
-                         y: center_coordinates.y,
-                         type: "mouseMoved")
-        sleep(MOUSE_MOVE_DELAY)
-        browser.send_cmd("Input.dispatchMouseEvent",
-                         x: center_coordinates.x,
-                         y: center_coordinates.y,
-                         button: "left",
-                         clickCount: 1,
-                         type: "mousePressed")
-        sleep(MOUSE_CLICK_DELAY)
-        browser.send_cmd("Input.dispatchMouseEvent",
-                         x: center_coordinates.x,
-                         y: center_coordinates.y,
-                         button: "left",
-                         clickCount: 1,
-                         type: "mouseReleased")
+        mouse_driver.click(self)
       end
 
-      private
+      def set(value)
+        # return if disabled?
+        # if readonly?
+        #   warn "Attempt to set readonly element with value: #{value} \n * This will raise an exception in a future version of Capybara"
+        #   return
+        # end
+
+        # if (Array === value) && !multiple?
+        #   raise TypeError.new "Value cannot be an Array when 'multiple' attribute is not present. Not a #{value.class}"
+        # end
+
+        # if radio?
+        #   set_radio(value)
+        # elsif checkbox?
+        #   set_checkbox(value)
+        # elsif input_field?
+        #   set_input(value)
+        # elsif textarea?
+        #   native['_capybara_raw_value'] = value.to_s
+        # end
+        #
+        click # eventually replace with `focus`
+        click # eventually replace with `focus`
+        keyboard_driver.type(value)
+      end
+
+      def box_model
+        @box_model ||= browser.send_cmd("DOM.getBoxModel", backendNodeId: devtools_backend_node_id).model
+      end
 
       def bounding_box
         quad = box_model.border
@@ -54,14 +62,20 @@ module Capybara
         OpenStruct.new(x: x, y: y, width: width, height: height)
       end
 
-      def box_model
-        @box_model ||= browser.send_cmd("DOM.getBoxModel", backendNodeId: devtools_backend_node_id).model
-      end
-
       def center_coordinates
         x = bounding_box.x + (bounding_box.width / 2)
         y = bounding_box.y + (bounding_box.height / 2)
         OpenStruct.new(x: x, y: y)
+      end
+
+      private
+
+      def mouse_driver
+        @mouse_driver ||= MouseDriver.new(browser)
+      end
+
+      def keyboard_driver
+        @keyboard_driver ||= KeyboardDriver.new(browser)
       end
 
       def browser
