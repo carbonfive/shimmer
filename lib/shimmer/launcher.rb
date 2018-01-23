@@ -14,7 +14,7 @@ module Capybara
       end
 
       def start
-        FileUtils.mkdir_p("log")
+        make_directories!
 
         process_command = "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' #{launcher_args.join(" ")}"
         @browser_pid = Process.spawn process_command, %i[out err] => "log/chrome.#{Time.now.to_f}.log"
@@ -32,6 +32,8 @@ module Capybara
       end
 
       def launcher_args
+        chrome_profile_path = File.join(@tmp_dir, "puppeteer_dev_profile-")
+
         # As great as these defaults are, they cause headed shimmer to run
         # INCREDIBLY slow. We can re-enable these as needed in the future.
         #
@@ -55,7 +57,9 @@ module Capybara
         #                 "--use-mock-keychain"]
 
         default_args = [
-          "--enable-automation"
+          "--enable-automation",
+          "--user-data-dir=#{chrome_profile_path}",
+          "--no-first-run"
         ]
 
         headless_args = [
@@ -98,6 +102,11 @@ module Capybara
         end
 
         false
+      end
+
+      def make_directories!
+        FileUtils.mkdir_p("log")
+        @tmp_dir = Dir.mktmpdir
       end
 
       def kill!
