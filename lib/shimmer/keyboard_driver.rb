@@ -2,7 +2,7 @@ require "json"
 
 class Capybara::Shimmer::KeyboardDriver
   KEYBOARD_LAYOUT_PATH = "./data/us_keyboard_layout.json".freeze
-  TYPE_DELAY = 0.05
+  TYPE_DELAY = 0.01
 
   attr_reader :browser
   def initialize(browser)

@@ -41,6 +41,7 @@ module Capybara
 
       def set(value)
         scroll_into_view_if_needed!
+        javascript_bridge.evaluate_js("function() { this.value = '#{value}'; }")
         # return if disabled?
         # if readonly?
         #   warn "Attempt to set readonly element with value: #{value} \n * This will raise an exception in a future version of Capybara"
@@ -60,7 +61,6 @@ module Capybara
         # elsif textarea?
         #   native['_capybara_raw_value'] = value.to_s
         # end
-        send_keys(value)
       end
 
       def send_keys(value)
