@@ -3,15 +3,10 @@ require "hashie/mash"
 require "json"
 
 RSpec.describe Capybara::Shimmer::Finder do
-  subject { described_class.new(driver) }
-  let(:driver) { instance_double(Capybara::Shimmer::Driver) }
+  subject { described_class.new(browser) }
   let(:browser) { instance_double(Capybara::Shimmer::Browser) }
 
   describe "#find_xpath" do
-    before do
-      allow(driver).to receive(:browser).and_return(browser)
-    end
-
     it "finds when xpath query returns a single item" do
       query_result_wire_response = '
 {"className":"Array","description":"Array(15)","objectId":"{\"injectedScriptId\":1,\"id\":46}","subtype":"array","type":"object"}
@@ -22,7 +17,7 @@ RSpec.describe Capybara::Shimmer::Finder do
       expected_query_result = Hashie::Mash.new(JSON.parse(query_result_wire_response))
       expected_properties_result = Hashie::Mash.new(JSON.parse(properties_result_wire_response))
 
-      allow(driver).to receive(:evaluate_script)
+      allow(Capybara::Shimmer::JavascriptBridge).to receive(:global_evaluate_script)
         .and_return(expected_query_result)
       allow(browser).to receive(:send_cmd)
         .with("Runtime.getProperties", objectId: "{\"injectedScriptId\":1,\"id\":46}", ownProperties: true)
@@ -53,7 +48,7 @@ RSpec.describe Capybara::Shimmer::Finder do
       expected_query_result = Hashie::Mash.new(JSON.parse(query_result_wire_response))
       expected_properties_result = Hashie::Mash.new(JSON.parse(properties_result_wire_response))
 
-      allow(driver).to receive(:evaluate_script)
+      allow(Capybara::Shimmer::JavascriptBridge).to receive(:global_evaluate_script)
         .and_return(expected_query_result)
       allow(browser).to receive(:send_cmd)
         .with("Runtime.getProperties", objectId: "{\"injectedScriptId\":1,\"id\":1}", ownProperties: true)
@@ -80,7 +75,7 @@ RSpec.describe Capybara::Shimmer::Finder do
       expected_query_result = Hashie::Mash.new(JSON.parse(query_result_wire_response))
       expected_properties_result = Hashie::Mash.new(JSON.parse(properties_result_wire_response))
 
-      allow(driver).to receive(:evaluate_script)
+      allow(Capybara::Shimmer::JavascriptBridge).to receive(:global_evaluate_script)
         .and_return(expected_query_result)
       allow(browser).to receive(:send_cmd)
         .with("Runtime.getProperties", objectId: "{\"injectedScriptId\":1,\"id\":1}", ownProperties: true)

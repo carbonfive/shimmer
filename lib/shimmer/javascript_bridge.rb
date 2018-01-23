@@ -3,6 +3,7 @@ module Capybara
   module Shimmer
     class JavascriptBridge
       attr_reader :browser, :devtools_remote_object_id
+
       def initialize(browser, devtools_remote_object_id:)
         @browser = browser
         @devtools_remote_object_id = devtools_remote_object_id
@@ -20,6 +21,16 @@ module Capybara
           raise JavascriptEvaluationError, result.exceptionDetails.exception
         else
           result.result.value
+        end
+      end
+
+      def self.global_evaluate_script(browser, script, return_by_value: true)
+        returned = browser.send_cmd("Runtime.evaluate", expression: script, returnByValue: return_by_value, awaitPromise: true)
+        raise JavascriptEvaluationError, returned.exceptionDetails.exception if returned.exceptionDetails
+        if return_by_value
+          returned.result.value
+        else
+          returned.result
         end
       end
     end

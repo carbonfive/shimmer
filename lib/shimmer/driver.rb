@@ -39,18 +39,14 @@ module Capybara
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#go_forward"
       end
 
+      # TODO/andrewhao What should happen on errors?
       def execute_script(script, return_by_value: false)
-        evaluate_script(script, return_by_value: return_by_value)
+        JavascriptBridge.global_evaluate_script(browser, script, return_by_value: return_by_value)
+        nil
       end
 
       def evaluate_script(script, return_by_value: true)
-        returned = browser.send_cmd("Runtime.evaluate", expression: script, returnByValue: return_by_value, awaitPromise: true)
-        raise JavascriptEvaluationError, returned.exceptionDetails.exception if returned.exceptionDetails
-        if return_by_value
-          returned.result.value
-        else
-          returned.result
-        end
+        JavascriptBridge.global_evaluate_script(browser, script, return_by_value: return_by_value)
       end
 
       def evaluate_async_script(_script, *_args)
@@ -165,7 +161,7 @@ module Capybara
       private
 
       def finder
-        @finder ||= Finder.new(self)
+        @finder ||= Finder.new(browser)
       end
 
       # rubocop:enable Lint/UnusedMethodArgument

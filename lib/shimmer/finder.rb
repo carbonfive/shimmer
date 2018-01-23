@@ -4,10 +4,10 @@ module Capybara
     class Finder
       extend Forwardable
 
-      attr_reader :driver
+      attr_reader :browser
 
-      def initialize(driver)
-        @driver = driver
+      def initialize(browser)
+        @browser = browser
       end
 
       def find_xpath(query)
@@ -21,7 +21,7 @@ module Capybara
           return array;
         })(#{query.inspect}, document)
         "
-        array_result = driver.evaluate_script(query_fn, return_by_value: false)
+        array_result = JavascriptBridge.global_evaluate_script(browser, query_fn, return_by_value: false)
         browser
           .send_cmd("Runtime.getProperties", objectId: array_result.objectId, ownProperties: true)
           .result
@@ -40,22 +40,6 @@ module Capybara
                                       devtools_node_id: node_id,
                                       devtools_backend_node_id: backend_node_id,
                                       devtools_remote_object_id: node_object_id)
-        end
-      end
-
-      def find_xpath_with_nokogiri(query)
-        Nokogiri::HTML(html)
-          .xpath(query)
-          .map do |node|
-          Capybara::Shimmer::Node.new(self, node)
-        end
-      end
-
-      def find_css_with_nokogiri(query)
-        Nokogiri::HTML(html)
-          .css(query)
-          .map do |node|
-          Capybara::Shimmer::Node.new(self, node)
         end
       end
 
@@ -65,7 +49,7 @@ module Capybara
           return element.querySelectorAll(selector);
         })(#{query.inspect}, document)
         "
-        array_result = driver.evaluate_script(query_fn, return_by_value: false)
+        array_result = JavascriptBridge.global_evaluate_script(browser, query_fn, return_by_value: false)
         browser
           .send_cmd("Runtime.getProperties", objectId: array_result.objectId, ownProperties: true)
           .result
@@ -85,21 +69,6 @@ module Capybara
                                       devtools_node_id: node_id,
                                       devtools_backend_node_id: backend_node_id,
                                       devtools_remote_object_id: node_object_id)
-        end
-      end
-
-      # LIMITATION: will not return to you a RemoteObjectId, which limits
-      # how many properties you can return from the node.
-      def find_css_with_direct_query_selector(query)
-        root_node_id = browser.root_node_id
-        results = browser.send_cmd(
-          "DOM.querySelectorAll",
-          selector: query, nodeId: root_node_id
-        ).nodeIds.map do |node_id|
-          html_fragment = browser.html_for(node_id: node_id)
-          devtools_node_props = describe_node(node_id: node_id)
-          nokogiri_element = nokogiri_htmlize(html_fragment)
-          Capybara::Shimmer::Node.new(self, nokogiri_element, devtools_node_id: node_id, devtools_backend_node_id: devtools_node_props.backendNodeId)
         end
       end
 
@@ -116,8 +85,6 @@ module Capybara
       def nokogiri_htmlize(html_string)
         Nokogiri::HTML.fragment(html_string).children.first
       end
-
-      def_delegators :driver, :browser
     end
   end
 end
