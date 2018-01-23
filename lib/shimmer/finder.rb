@@ -32,7 +32,10 @@ module Capybara
       def scoped_find_css(query, scope: root_node)
         query_fn = wrap_fn { build_css_query }
         javascript_bridge = JavascriptBridge.new(browser, devtools_remote_object_id: scope.devtools_remote_object_id)
-        array_result = javascript_bridge.evaluate_js(query_fn, [{ value: query }, { objectId: scope.devtools_remote_object_id }])
+        array_result = javascript_bridge.evaluate_js(query_fn, [
+          { value: query },
+          { objectId: scope.devtools_remote_object_id }
+        ])
         nodes_from_property_array(array_result)
       end
 
@@ -68,16 +71,11 @@ module Capybara
       end
 
       def wrap_fn
-        "
-        function(query, element) {
-        #{yield}
-        }
-        "
+        "function(query, element) { #{yield} }"
       end
 
       def wrap_iife(query, js_context: "document")
-        "
-        (function(query, element) {
+        "(function(query, element) {
           #{yield}
         })(#{query.inspect}, #{js_context})
         "
