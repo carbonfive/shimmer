@@ -11,10 +11,7 @@ module Capybara
       end
 
       def click(node)
-        browser.send_cmd("Input.dispatchMouseEvent",
-                         x: node.center_coordinates.x,
-                         y: node.center_coordinates.y,
-                         type: "mouseMoved")
+        move_to(node)
         sleep(MOUSE_MOVE_DELAY)
         browser.send_cmd("Input.dispatchMouseEvent",
                          x: node.center_coordinates.x,
@@ -29,6 +26,13 @@ module Capybara
                          button: "left",
                          clickCount: 1,
                          type: "mouseReleased")
+      end
+
+      def move_to(node)
+        browser.send_cmd("Input.dispatchMouseEvent",
+                         x: node.center_coordinates.x,
+                         y: node.center_coordinates.y,
+                         type: "mouseMoved")
       end
     end
   end

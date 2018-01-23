@@ -77,6 +77,10 @@ module Capybara
         javascript_bridge.evaluate_js('function() { return this.select() }')
       end
 
+      def hover
+        mouse_driver.move_to(self)
+      end
+
       def box_model
         @box_model ||= browser.send_cmd("DOM.getBoxModel", backendNodeId: devtools_backend_node_id).model
       end
