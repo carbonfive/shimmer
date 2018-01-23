@@ -21,7 +21,7 @@ module Capybara
       end
 
       def value
-        javascript_bridge.evaluate_js('function() { return this.value }')
+        javascript_bridge.evaluate_js("function() { return this.value }")
       end
 
       def click
@@ -51,11 +51,11 @@ module Capybara
       end
 
       def focus!
-        javascript_bridge.evaluate_js('function() { return this.focus() }')
+        javascript_bridge.evaluate_js("function() { return this.focus() }")
       end
 
       def select!
-        javascript_bridge.evaluate_js('function() { return this.select() }')
+        javascript_bridge.evaluate_js("function() { return this.select() }")
       end
 
       def hover
@@ -70,7 +70,7 @@ module Capybara
       end
 
       def html
-        javascript_bridge.evaluate_js('function() { return this.innerHTML }')
+        javascript_bridge.evaluate_js("function() { return this.innerHTML }")
       end
 
       def find_css(query)
@@ -98,7 +98,7 @@ module Capybara
       end
 
       def scroll_into_view_if_needed!
-        javascript_bridge.evaluate_js('function() { return this.scrollIntoViewIfNeeded() }')
+        javascript_bridge.evaluate_js("function() { return this.scrollIntoViewIfNeeded() }")
       end
 
       def javascript_bridge

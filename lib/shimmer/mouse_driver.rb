@@ -1,10 +1,10 @@
 module Capybara
   module Shimmer
     class MouseDriver
-      attr_reader :browser
       MOUSE_MOVE_DELAY = 0.25
       MOUSE_CLICK_DELAY = 0.25
 
+      attr_reader :browser
 
       def initialize(browser)
         @browser = browser
