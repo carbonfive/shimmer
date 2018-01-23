@@ -18,9 +18,6 @@ module Capybara
         @devtools_node_id = devtools_node_id
         @devtools_backend_node_id = devtools_backend_node_id
         @devtools_remote_object_id = devtools_remote_object_id
-        if devtools_node_id.nil?
-
-        end
       end
 
       def value
@@ -28,10 +25,22 @@ module Capybara
       end
 
       def click
+        scroll_into_view_if_needed!
         mouse_driver.click(self)
+
+        # TODO/andrewhao
+        # Assumption: the browser needs to "work" after you click a link
+        # Therefore: we must block the test runner from taking action on any expectations
+        # before the browser has transitioned.
+        # Outcome: more reliable specs.
+        #
+        # (Problematic assumption - what if the click merely re-renders a node
+        # on the DOM like an accordion?)
+        # browser.wait_for("Page.frameStoppedLoading")
       end
 
       def set(value)
+        scroll_into_view_if_needed!
         # return if disabled?
         # if readonly?
         #   warn "Attempt to set readonly element with value: #{value} \n * This will raise an exception in a future version of Capybara"
@@ -51,8 +60,11 @@ module Capybara
         # elsif textarea?
         #   native['_capybara_raw_value'] = value.to_s
         # end
+        send_keys(value)
+      end
 
-        focus!
+      def send_keys(value)
+        scroll_into_view_if_needed!
         select!
         keyboard_driver.type(value)
       end
@@ -86,6 +98,10 @@ module Capybara
       end
 
       private
+
+      def scroll_into_view_if_needed!
+        javascript_bridge.evaluate_js('function() { return this.scrollIntoViewIfNeeded() }')
+      end
 
       def javascript_bridge
         @javascript_bridge ||= JavascriptBridge.new(browser, devtools_remote_object_id: devtools_remote_object_id)
