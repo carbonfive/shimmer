@@ -11,16 +11,7 @@ module Capybara
       end
 
       def find_xpath(query)
-        query_fn = "
-        (function(expression, element) {
-          const iterator = document.evaluate(expression, element, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
-          const array = [];
-          let item;
-          while ((item = iterator.iterateNext()))
-            array.push(item);
-          return array;
-        })(#{query.inspect}, document)
-        "
+        query_fn = build_xpath_query(query)
         array_result = JavascriptBridge.global_evaluate_script(browser, query_fn, return_by_value: false)
         browser
           .send_cmd("Runtime.getProperties", objectId: array_result.objectId, ownProperties: true)
@@ -44,11 +35,7 @@ module Capybara
       end
 
       def find_css(query)
-        query_fn = "
-        (function(selector, element) {
-          return element.querySelectorAll(selector);
-        })(#{query.inspect}, document)
-        "
+        query_fn = build_css_query(query)
         array_result = JavascriptBridge.global_evaluate_script(browser, query_fn, return_by_value: false)
         browser
           .send_cmd("Runtime.getProperties", objectId: array_result.objectId, ownProperties: true)
@@ -58,7 +45,6 @@ module Capybara
           .select { |node| node.type == "object" && node.subtype == "node" }
           .map(&:objectId)
           .map do |node_object_id|
-
           devtools_node_props = describe_node(object_id: node_object_id)
           node_id = devtools_node_props.nodeId
           backend_node_id = devtools_node_props.backendNodeId
@@ -73,6 +59,27 @@ module Capybara
       end
 
       private
+
+      def build_xpath_query(query, js_context: "document")
+        "
+        (function(expression, element) {
+          const iterator = document.evaluate(expression, element, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
+          const array = [];
+          let item;
+          while ((item = iterator.iterateNext()))
+            array.push(item);
+          return array;
+        })(#{query.inspect}, #{js_context})
+        "
+      end
+
+      def build_css_query(query, js_context: "document")
+        "
+        (function(selector, element) {
+          return element.querySelectorAll(selector);
+        })(#{query.inspect}, #{js_context})
+        "
+      end
 
       def describe_node(node_id: nil, object_id: nil)
         if node_id
