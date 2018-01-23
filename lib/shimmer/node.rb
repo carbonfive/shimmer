@@ -11,9 +11,9 @@ module Capybara
 
       def initialize(driver,
                      native,
-                     devtools_node_id: nil,
-                     devtools_backend_node_id: nil,
-                     devtools_remote_object_id: nil)
+                     devtools_node_id:,
+                     devtools_backend_node_id:,
+                     devtools_remote_object_id:)
         super(driver, native)
         @devtools_node_id = devtools_node_id
         @devtools_backend_node_id = devtools_backend_node_id

@@ -8,7 +8,13 @@ RSpec.describe Capybara::Shimmer::Node do
   let(:keyboard_driver) { instance_double(Capybara::Shimmer::KeyboardDriver).as_null_object }
   let(:javascript_bridge) { instance_double(Capybara::Shimmer::JavascriptBridge).as_null_object }
 
-  subject { described_class.new(driver, native) }
+  subject do
+    described_class.new(driver,
+                        native,
+                        devtools_node_id: 1,
+                        devtools_backend_node_id: 2,
+                        devtools_remote_object_id: "{foo: 3}")
+  end
 
   before do
     allow(Capybara::Shimmer::JavascriptBridge).to receive(:new) { javascript_bridge }
