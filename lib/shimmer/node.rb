@@ -69,6 +69,18 @@ module Capybara
         OpenStruct.new(x: x, y: y)
       end
 
+      def html
+        javascript_bridge.evaluate_js('function() { return this.innerHTML }')
+      end
+
+      def find_css(query)
+        Capybara::Shimmer::Finder.new(browser).scoped_find_css(query, scope: self)
+      end
+
+      def find_xpath(query)
+        Capybara::Shimmer::Finder.new(browser).scoped_find_xpath(query, scope: self)
+      end
+
       private
 
       def box_model

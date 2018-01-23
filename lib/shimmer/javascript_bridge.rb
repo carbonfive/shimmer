@@ -16,11 +16,14 @@ module Capybara
                                   objectId: devtools_remote_object_id,
                                   awaitPromise: true,
                                   arguments: args,
+                                  userGesture: true,
                                   returnByValue: false)
         if result.exceptionDetails
           raise JavascriptEvaluationError, result.exceptionDetails.exception
-        else
+        elsif result.result.value
           result.result.value
+        else
+          result.result
         end
       end
 
