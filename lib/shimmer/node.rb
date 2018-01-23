@@ -42,25 +42,6 @@ module Capybara
       def set(value)
         scroll_into_view_if_needed!
         javascript_bridge.evaluate_js("function() { this.value = '#{value}'; }")
-        # return if disabled?
-        # if readonly?
-        #   warn "Attempt to set readonly element with value: #{value} \n * This will raise an exception in a future version of Capybara"
-        #   return
-        # end
-
-        # if (Array === value) && !multiple?
-        #   raise TypeError.new "Value cannot be an Array when 'multiple' attribute is not present. Not a #{value.class}"
-        # end
-
-        # if radio?
-        #   set_radio(value)
-        # elsif checkbox?
-        #   set_checkbox(value)
-        # elsif input_field?
-        #   set_input(value)
-        # elsif textarea?
-        #   native['_capybara_raw_value'] = value.to_s
-        # end
       end
 
       def send_keys(value)
@@ -82,6 +63,14 @@ module Capybara
         mouse_driver.move_to(self)
       end
 
+      def center_coordinates
+        x = bounding_box.x + (bounding_box.width / 2)
+        y = bounding_box.y + (bounding_box.height / 2)
+        OpenStruct.new(x: x, y: y)
+      end
+
+      private
+
       def box_model
         @box_model ||= browser.send_cmd("DOM.getBoxModel", backendNodeId: devtools_backend_node_id).model
       end
@@ -95,14 +84,6 @@ module Capybara
 
         OpenStruct.new(x: x, y: y, width: width, height: height)
       end
-
-      def center_coordinates
-        x = bounding_box.x + (bounding_box.width / 2)
-        y = bounding_box.y + (bounding_box.height / 2)
-        OpenStruct.new(x: x, y: y)
-      end
-
-      private
 
       def scroll_into_view_if_needed!
         javascript_bridge.evaluate_js('function() { return this.scrollIntoViewIfNeeded() }')
