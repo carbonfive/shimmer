@@ -64,7 +64,6 @@ module Capybara
 
         headless_args = [
           "--headless",
-          "--disable-gpu",
           "--hide-scrollbars",
           "--mute-audio"
         ]
