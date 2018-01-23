@@ -28,4 +28,40 @@ RSpec.describe Capybara::Shimmer::KeyboardDriver do
       subject.send_character("q")
     end
   end
+
+  describe "#key_down" do
+    it "sends a keycode" do
+      expect(browser)
+        .to receive(:send_cmd)
+        .with("Input.dispatchKeyEvent",
+              type: :keyDown,
+              windowsVirtualKeyCode: 81,
+              code: "KeyQ",
+              text: "q",
+              unmodifiedText: "q",
+              location: 0,
+              isKeypad: false,
+              key: "q")
+
+      subject.key_down("q")
+    end
+  end
+
+  describe "#key_up" do
+    it "sends a keycode" do
+      expect(browser)
+        .to receive(:send_cmd)
+        .with("Input.dispatchKeyEvent",
+              type: :keyUp,
+              windowsVirtualKeyCode: 81,
+              code: "KeyQ",
+              text: "q",
+              unmodifiedText: "q",
+              location: 0,
+              isKeypad: false,
+              key: "q")
+
+      subject.key_up("q")
+    end
+  end
 end

@@ -47,7 +47,7 @@ module Capybara
       def send_keys(value)
         scroll_into_view_if_needed!
         select!
-        keyboard_driver.type(value)
+        keyboard_driver.type_raw(value)
       end
 
       def focus!
