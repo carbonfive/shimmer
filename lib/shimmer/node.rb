@@ -69,6 +69,16 @@ module Capybara
         OpenStruct.new(x: x, y: y)
       end
 
+      def select_option
+        javascript_bridge.evaluate_js("
+          function() {
+            this.dispatchEvent(new Event('input', { 'bubbles': true }));
+            this.dispatchEvent(new Event('change', { 'bubbles': true }));
+            this.selected = true;
+          }
+        ")
+      end
+
       def html
         javascript_bridge.evaluate_js("function() { return this.innerHTML }")
       end

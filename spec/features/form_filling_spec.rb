@@ -26,9 +26,27 @@ RSpec.describe "form filling", type: :feature do
         updated_result = find(selector)
         expect(updated_result.value).to eq "Foobar"
       end
+
+      context "via action DSL" do
+        it "fills in" do
+          fill_in("example-#{input_type}-input", with: 'Cruciferous veggies')
+          expect(find(selector).value).to eq('Cruciferous veggies')
+        end
+      end
     end
   end
 
   context "select dropdowns" do
+    it "reads value" do
+      select_el = find("#exampleSelect1")
+      expect(select_el.value).to eq "1"
+    end
+
+    context "via action DSL" do
+      it "sets value" do
+        select("2", from: "exampleSelect1")
+        expect(find('#exampleSelect1').value).to eq "2"
+      end
+    end
   end
 end
