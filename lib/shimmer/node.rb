@@ -78,6 +78,7 @@ module Capybara
       end
 
       def hover
+        scroll_into_view_if_needed!
         mouse_driver.move_to(self)
       end
 
