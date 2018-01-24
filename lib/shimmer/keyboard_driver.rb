@@ -14,7 +14,7 @@ class Capybara::Shimmer::KeyboardDriver
 
   # Only sends "input" events through the DOM.
   def type(value)
-    value.chars do |char|
+    value.to_s.chars do |char|
       send_character(char)
       sleep(TYPE_DELAY)
     end
@@ -22,7 +22,7 @@ class Capybara::Shimmer::KeyboardDriver
 
   # Sends keydown and keyup events through the DOM.
   def type_raw(value)
-    value.chars do |char|
+    value.to_s.chars do |char|
       key_down(char)
       key_up(char)
       sleep(TYPE_DELAY)

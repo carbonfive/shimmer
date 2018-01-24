@@ -8,10 +8,40 @@ RSpec.describe Capybara::Shimmer::KeyboardDriver do
     it "programmatically sends keystrokes" do
       expect(browser)
         .to receive(:send_cmd)
-        .with("Input.dispatchKeyEvent", anything)
-        .exactly(5)
-        .times
-      subject.type("abcde")
+        .with("Input.dispatchKeyEvent", hash_including(key: "a"))
+        .ordered
+      expect(browser)
+        .to receive(:send_cmd)
+        .with("Input.dispatchKeyEvent", hash_including(key: "b"))
+        .ordered
+      subject.type("ab")
+    end
+
+    it "converts to string from int" do
+      expect(browser)
+        .to receive(:send_cmd)
+        .with("Input.dispatchKeyEvent",
+              type: :char,
+              text: "9",
+              unmodifiedText: "9",
+              key: "9")
+      subject.type(9)
+    end
+
+    it "converts to string from float" do
+      expect(browser)
+        .to receive(:send_cmd)
+        .with("Input.dispatchKeyEvent", hash_including(key: "9"))
+        .ordered
+      expect(browser)
+        .to receive(:send_cmd)
+        .with("Input.dispatchKeyEvent", hash_including(key: "."))
+        .ordered
+      expect(browser)
+        .to receive(:send_cmd)
+        .with("Input.dispatchKeyEvent", hash_including(key: "0"))
+        .ordered
+      subject.type(9.0)
     end
   end
 
