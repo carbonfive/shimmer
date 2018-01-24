@@ -13,6 +13,24 @@ RSpec.describe Capybara::Shimmer::Driver do
     end
   end
 
+  describe "#accept_modal" do
+    it "sends a Page.handleJavaScriptDialog" do
+      expect(browser).to receive(:send_cmd)
+        .with("Page.handleJavaScriptDialog",
+              accept: true)
+      subject.accept_modal(:confirm)
+    end
+  end
+
+  describe "#dismiss_modal" do
+    it "sends a Page.handleJavaScriptDialog" do
+      expect(browser).to receive(:send_cmd)
+        .with("Page.handleJavaScriptDialog",
+              accept: false)
+      subject.dismiss_modal(:confirm)
+    end
+  end
+
   describe "#evaluate_script" do
     context "return_by_value true" do
       it "calls Runtime.evaluate with expression" do

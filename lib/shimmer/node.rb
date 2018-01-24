@@ -41,7 +41,12 @@ module Capybara
 
       def set(value)
         scroll_into_view_if_needed!
-        javascript_bridge.evaluate_js("function() { this.value = '#{value}'; }")
+        if input_field?
+          select!
+          keyboard_driver.type(value)
+        else
+          javascript_bridge.evaluate_js("function() { this.value = '#{value}'; }")
+        end
       end
 
       def send_keys(value)

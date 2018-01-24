@@ -10,7 +10,7 @@ module Capybara
       DEVTOOLS_HOST = "localhost"
 
       attr_reader :browser_pid, :port, :host, :client
-      def_delegators :client, :wait_for, :send_cmd, :wait_for_with_either_match
+      def_delegators :client, :wait_for, :send_cmd, :wait_for_with_either_match, :on
 
       def initialize(port: DEVTOOLS_PORT, host: DEVTOOLS_HOST, use_proxy: false, headless: false, client: nil)
         @port = port

@@ -4,9 +4,6 @@ require "shimmer/browser"
 
 module Capybara
   module Shimmer
-    class JavascriptEvaluationError < StandardError
-    end
-
     class Driver < Capybara::Driver::Base
       attr_reader :browser, :options
       extend Forwardable
@@ -122,8 +119,11 @@ module Capybara
       # @return [String]  the message shown in the modal
       # @raise [Capybara::ModalNotFound]  if modal dialog hasn't been found
       #
+      # TODO/andrewhao This is not a complete implementation, and has issues around single-threaded
+      # test runners where the alert dialog will block the thread that also runs the test.
       def accept_modal(_type, **_options)
-        raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#accept_modal"
+        yield if block_given?
+        browser.send_cmd("Page.handleJavaScriptDialog", accept: true)
       end
 
       ##
@@ -135,8 +135,11 @@ module Capybara
       # @return [String]  the message shown in the modal
       # @raise [Capybara::ModalNotFound]  if modal dialog hasn't been found
       #
+      # TODO/andrewhao This is not a complete implementation, and has issues around single-threaded
+      # test runners where the alert dialog will block the thread that also runs the test.
       def dismiss_modal(_type, **_options)
-        raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#dismiss_modal"
+        yield if block_given?
+        browser.send_cmd("Page.handleJavaScriptDialog", accept: false)
       end
 
       def invalid_element_errors

@@ -24,6 +24,10 @@ RSpec.describe Capybara::Shimmer::Node do
 
   describe "#set" do
     context "when a text node" do
+      before do
+        allow(native).to receive(:node_name).and_return("input")
+      end
+
       it "delegates to the KeyboardDriver" do
         subject.set("hello")
         expect(javascript_bridge).to have_received(:evaluate_js)
