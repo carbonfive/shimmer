@@ -78,6 +78,11 @@ module CapybaraExample
     visit("index.html")
     find("li.css-resources").text
     find_all("nav[role=navigation] a").map { |el| el[:href] }
+    5.times do
+      click_on "Mid Century Modern"
+      find('h1', text: "Mid Century Modern")
+      click_on "Go back"
+    end
     Capybara.reset_sessions!
   end
 end
@@ -87,8 +92,6 @@ Benchmark.ips do |x|
   x.time = 30
 
   %i[headless_shimmer shimmer poltergeist chrome headless_chrome].each do |driver|
-    # %i[headless_shimmer poltergeist].each do |driver|
-    # %i[headless_chrome chrome].each do |driver|
     x.report(driver.to_s) { CapybaraExample.run(driver, fixture_server) }
   end
 
