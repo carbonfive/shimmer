@@ -34,32 +34,24 @@ module Capybara
       def launcher_args
         chrome_profile_path = File.join(@tmp_dir, "puppeteer_dev_profile-")
 
-        # As great as these defaults are, they cause headed shimmer to run
-        # INCREDIBLY slow. We can re-enable these as needed in the future.
-        #
-        # These are default args provided by the puppeteer project.
-        #
-        # default_args = ["--disable-background-networking",
-        #                 "--disable-background-timer-throttling",
-        #                 "--disable-client-side-phishing-detection",
-        #                 "--disable-default-apps",
-        #                 "--disable-extensions",
-        #                 "--disable-hang-monitor",
-        #                 "--disable-popup-blocking",
-        #                 "--disable-prompt-on-repost",
-        #                 "--disable-sync",
-        #                 "--disable-translate",
-        #                 "--metrics-recording-only",
-        #                 "--no-first-run",
-        #                 "--safebrowsing-disable-auto-update",
-        #                 "--enable-automation",
-        #                 "--password-store=basic",
-        #                 "--use-mock-keychain"]
-
         default_args = [
+          "--disable-background-networking",
+          "--disable-background-timer-throttling",
+          "--disable-client-side-phishing-detection",
+          "--disable-default-apps",
+          "--disable-extensions",
+          "--disable-hang-monitor",
+          "--disable-popup-blocking",
+          "--disable-prompt-on-repost",
+          "--disable-sync",
+          "--disable-translate",
+          "--metrics-recording-only",
+          "--no-first-run",
+          "--safebrowsing-disable-auto-update",
           "--enable-automation",
-          "--user-data-dir=#{chrome_profile_path}",
-          "--no-first-run"
+          "--password-store=basic",
+          "--use-mock-keychain",
+          "--user-data-dir=#{chrome_profile_path}"
         ]
 
         headless_args = [
