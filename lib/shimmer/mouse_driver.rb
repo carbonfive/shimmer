@@ -1,8 +1,8 @@
 module Capybara
   module Shimmer
     class MouseDriver
-      MOUSE_MOVE_DELAY = 0.25
-      MOUSE_CLICK_DELAY = 0.25
+      MOUSE_MOVE_DELAY = 0.01
+      MOUSE_CLICK_DELAY = 0.01
 
       attr_reader :browser
 
