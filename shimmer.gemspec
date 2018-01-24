@@ -52,4 +52,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "selenium-webdriver"
   spec.add_development_dependency "webdrivers"
+  spec.add_development_dependency "ruby-prof"
 end
