@@ -10,7 +10,7 @@ module CapybaraExample
     visit("index.html")
     find("li.css-resources").text
     find_all("nav[role=navigation] a").map { |el| el[:href] }
-    1.times do
+    5.times do
       click_on "Mid Century Modern"
       find('h1', text: "Mid Century Modern")
       click_on "Go back"
