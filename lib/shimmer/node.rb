@@ -1,9 +1,8 @@
 # A representation of a single DOM node
 #
-# Our current implementation depends on Ruby-land Nokogiri parsing.
-#
-# This will suffice for simple read operations, but will start to break down
-# when testing for visibility and DOM-mutating operations.
+# Our current implementation depends on Ruby-land Nokogiri parsing for reading
+# attributes, then shifting to a DevTools protocol-based implementation for
+# manipulating properties.
 module Capybara
   module Shimmer
     class Node < Capybara::RackTest::Node
@@ -27,16 +26,6 @@ module Capybara
       def click
         scroll_into_view_if_needed!
         mouse_driver.click(self)
-
-        # TODO/andrewhao
-        # Assumption: the browser needs to "work" after you click a link
-        # Therefore: we must block the test runner from taking action on any expectations
-        # before the browser has transitioned.
-        # Outcome: more reliable specs.
-        #
-        # (Problematic assumption - what if the click merely re-renders a node
-        # on the DOM like an accordion?)
-        # browser.wait_for("Page.frameStoppedLoading")
       end
 
       def set(value)

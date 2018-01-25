@@ -4,13 +4,13 @@ An experimental Capybara driver for headless chrome.
 
 Why? Headless Chrome via Selenium is about 2x slower than Poltergeist, which is a bummer. How fast could it be if we cut out the middleman and talked directly to Chromedriver, or Chrome? The goal of Shimmer is to figure that out.
 
-# Setup
+## Setup
 
 Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-proxy) to see wire traffic over the remote debugging socket.
 
     $ go get -u github.com/wendigo/chrome-protocol-proxy
 
-# Before running the test suite (benchmark)
+### Before running the test suite (benchmark)
 
    1. Be sure to start up the proxy in a separate window before beginning the benchmark suite.
 
@@ -20,7 +20,7 @@ Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-pro
 
    2. Be sure to close Google Chrome completely - having any other open Chrome window or process will interfere with the runner.
 
-# Benchmarks
+## Benchmarks
 
 There's a simple benchmark in place...
 
@@ -30,17 +30,37 @@ There's a simple benchmark in place...
 Which currently produces these results on my laptop:
 
 ```
-Warming up --------------------------------------
-         poltergeist     1.000  i/100ms
-     headless_chrome     1.000  i/100ms
-              chrome     1.000  i/100ms
 Calculating -------------------------------------
-         poltergeist     7.153  (± 0.0%) i/s -    215.000  in  30.127967s
-     headless_chrome     2.668  (± 0.0%) i/s -     80.000  in  30.000791s
-              chrome     2.440  (± 0.0%) i/s -     74.000  in  30.344067s
+    headless_shimmer      2.023  (± 0.0%) i/s -     61.000  in  30.423677s
+             shimmer      0.965  (± 0.0%) i/s -     29.000  in  30.120099s
+         poltergeist      3.372  (± 0.0%) i/s -    101.000  in  30.041906s
+              chrome      0.721  (± 0.0%) i/s -     22.000  in  30.583263s
+     headless_chrome      0.926  (± 0.0%) i/s -     28.000  in  30.272857s
 
 Comparison:
-         poltergeist:    7.2 i/s
-     headless_chrome:    2.7 i/s - 2.68x  slower
-              chrome:    2.4 i/s - 2.93x  slower
+         poltergeist:        3.4 i/s
+    headless_shimmer:        2.0 i/s - 1.67x  slower
+             shimmer:        1.0 i/s - 3.50x  slower
+     headless_chrome:        0.9 i/s - 3.64x  slower
+              chrome:        0.7 i/s - 4.68x  slower
 ``` 
+
+## Profiling
+
+Profiling is important to understanding the root causes of slowdowns between different drivers.
+
+The recommended way to profile test runs is to use the `profile_driver` script.
+
+    $ ./benchmark/profile_driver <NAME_OF_DRIVER>
+
+Driver may be either `headless_chrome`, `chrome`, `headless_shimmer`, `shimmer`, or `poltergeist`.
+
+A `callgrind`-compatible file will be generated in the `tmp/` directory. (It can also generate hundreds of partial files to support its run - you can safely ignore those.) Recommend you use `qcachegrind` to view and analyze the results.
+
+First, install `qcachegrind`:
+
+    $ brew install qcachegrind
+
+Then open a call profile to analyze the results:
+
+    $ qcachegrind tmp/headless_shimmer.callgrind.out.42062
