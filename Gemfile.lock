@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     shimmer (0.1.0)
-      andrewhao-chrome_remote (~> 0.2.0)
+      andrewhao-chrome_remote (~> 0.2.1)
       capybara (~> 2.16)
       nokogiri (~> 1.8.1)
 
@@ -11,7 +11,7 @@ GEM
   specs:
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
-    andrewhao-chrome_remote (0.2.0)
+    andrewhao-chrome_remote (0.2.1)
       hashie (~> 3.5)
       websocket-driver (~> 0.6)
     ast (2.3.0)

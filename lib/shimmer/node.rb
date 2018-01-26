@@ -26,6 +26,8 @@ module Capybara
       def click
         scroll_into_view_if_needed!
         mouse_driver.click(self)
+
+        maybe_block_until_network_request_finishes!
       end
 
       def set(value)
@@ -86,6 +88,14 @@ module Capybara
       end
 
       private
+
+      def maybe_block_until_network_request_finishes!
+        begin
+          browser.wait_for("Network.requestWillBeSent", timeout: 0.1)
+          browser.wait_for("Network.loadingFinished", timeout: 5)
+        rescue Timeout::Error
+        end
+      end
 
       def box_model
         @box_model ||= browser.send_cmd("DOM.getBoxModel", backendNodeId: devtools_backend_node_id).model
