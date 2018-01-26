@@ -1,16 +1,8 @@
-GIT
-  remote: https://github.com/andrewhao/chrome_remote
-  revision: ac8c8fa0cab9630359f5b4329ca02daef157b686
-  branch: event-tweaks
-  specs:
-    chrome_remote (0.1.0)
-      hashie (~> 3.5)
-      websocket-driver (~> 0.6)
-
 PATH
   remote: .
   specs:
     shimmer (0.1.0)
+      andrewhao-chrome_remote (~> 0.2.0)
       capybara (~> 2.16)
       nokogiri (~> 1.8.1)
 
@@ -19,6 +11,9 @@ GEM
   specs:
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
+    andrewhao-chrome_remote (0.2.0)
+      hashie (~> 3.5)
+      websocket-driver (~> 0.6)
     ast (2.3.0)
     awesome_print (1.8.0)
     benchmark-ips (2.7.2)
@@ -113,7 +108,6 @@ DEPENDENCIES
   benchmark-ips
   bundler (~> 1.16)
   capybara
-  chrome_remote!
   colorize
   poltergeist
   progress_bar
