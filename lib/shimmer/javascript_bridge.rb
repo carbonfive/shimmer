@@ -20,7 +20,7 @@ module Capybara
                                   returnByValue: false)
         if result.exceptionDetails
           raise JavascriptEvaluationError, result.exceptionDetails.exception
-        elsif result.result.value
+        elsif !result.result.value.nil?
           result.result.value
         else
           result.result
