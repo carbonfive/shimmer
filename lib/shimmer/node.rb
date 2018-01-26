@@ -87,14 +87,24 @@ module Capybara
         Capybara::Shimmer::Finder.new(browser).scoped_find_xpath(query, scope: self)
       end
 
+      def visible?
+        javascript_bridge.evaluate_js("
+        function() {
+          const style = window.getComputedStyle(this);
+          const boundingBox = this.getBoundingClientRect();
+          const isComputedStyleVisible = style && style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+          const isBoundingBoxZero = boundingBox.height === 0 || boundingBox.width === 0;
+          return !isBoundingBoxZero && isComputedStyleVisible;
+       }
+                                      ")
+      end
+
       private
 
       def maybe_block_until_network_request_finishes!
-        begin
-          browser.wait_for("Network.requestWillBeSent", timeout: 0.1)
-          browser.wait_for("Network.loadingFinished", timeout: 5)
-        rescue Timeout::Error
-        end
+        browser.wait_for("Network.requestWillBeSent", timeout: 0.1)
+        browser.wait_for("Network.loadingFinished", timeout: 5)
+      rescue Timeout::Error
       end
 
       def box_model

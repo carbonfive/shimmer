@@ -33,6 +33,12 @@ RSpec.describe "querying elements", type: :feature do
       result = find(:link_or_button, "CSS Resource Guide")
       expect(result.text).to eq "CSS Resource Guide"
     end
+
+    it "does not find elements that are hidden" do
+      expect {
+        find('.should-be-hidden')
+      }.to raise_error(Capybara::ElementNotFound)
+    end
   end
 
   describe "#all" do

@@ -11,7 +11,7 @@ require_relative "../benchmark/fixture_server"
 fixture_server = FixtureServer.new
 
 Capybara.register_driver :shimmer do |app|
-  Capybara::Shimmer::Driver.new(app, use_proxy: true, headless: false)
+  Capybara::Shimmer::Driver.new(app, use_proxy: false, headless: true)
 end
 
 Capybara.register_driver :headless_chrome do |app|
@@ -25,6 +25,8 @@ Capybara.register_driver :headless_chrome do |app|
   )
 end
 
+# Capybara.current_driver = :headless_chrome
+# Capybara.default_driver = :headless_chrome
 # Capybara.current_driver = :poltergeist
 # Capybara.default_driver = :poltergeist
 Capybara.current_driver = :shimmer
