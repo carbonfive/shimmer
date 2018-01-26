@@ -15,18 +15,14 @@ module Capybara
         @app     = app
       end
 
-      def_delegators :browser, :current_url, :visit
+      def_delegators :browser, :current_url, :visit, :html,
+                     :evaluate_script, :execute_script, :save_screenshot, :reset!
 
       def refresh
         raise NotImplementedError
       end
 
       def_delegators :finder, :find_xpath, :find_css
-
-      def html
-        root_node = browser.send_cmd("DOM.getDocument")
-        browser.html_for(backend_node_id: root_node.root.backendNodeId)
-      end
 
       def go_back
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#go_back"
@@ -36,25 +32,8 @@ module Capybara
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#go_forward"
       end
 
-      # TODO/andrewhao What should happen on errors?
-      def execute_script(script, return_by_value: false)
-        JavascriptBridge.global_evaluate_script(browser, script, return_by_value: return_by_value)
-        nil
-      end
-
-      def evaluate_script(script, return_by_value: true)
-        JavascriptBridge.global_evaluate_script(browser, script, return_by_value: return_by_value)
-      end
-
       def evaluate_async_script(_script, *_args)
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#evaluate_script_asnyc"
-      end
-
-      def save_screenshot(path, **_options)
-        result = browser.send_cmd("Page.captureScreenshot")
-        File.open(path, "wb") do |file|
-          file.write Base64.decode64(result.data)
-        end
       end
 
       def response_headers
@@ -148,10 +127,6 @@ module Capybara
 
       def wait?
         true
-      end
-
-      def reset!
-        browser.reset!
       end
 
       def needs_server?

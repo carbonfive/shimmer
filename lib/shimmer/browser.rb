@@ -22,7 +22,7 @@ module Capybara
 
       def start
         Launcher.new(host: @host, port: @port, headless: @headless).start
-        setup_client!
+        setup_devtools_client!
         self
       end
 
@@ -39,16 +39,31 @@ module Capybara
       end
 
       def current_url
-        client.send_cmd("Runtime.evaluate", expression: "window.location.href")
+        client.send_cmd("Runtime.evaluate",
+                        expression: "window.location.href")
           .result
           .value
       end
 
-      def root_node_id
-        client
-          .send_cmd("DOM.getDocument")
-          .root
-          .nodeId
+      def html
+        html_for(backend_node_id: root_node.backendNodeId)
+      end
+
+      # TODO/andrewhao What should happen on errors?
+      def execute_script(script, return_by_value: false)
+        JavascriptBridge.global_evaluate_script(self, script, return_by_value: return_by_value)
+        nil
+      end
+
+      def evaluate_script(script, return_by_value: true)
+        JavascriptBridge.global_evaluate_script(self, script, return_by_value: return_by_value)
+      end
+
+      def save_screenshot(path, **_options)
+        result = client.send_cmd("Page.captureScreenshot")
+        File.open(path, "wb") do |file|
+          file.write Base64.decode64(result.data)
+        end
       end
 
       def html_for(backend_node_id: nil, node_id: nil)
@@ -65,7 +80,13 @@ module Capybara
 
       private
 
-      def setup_client!
+      def root_node
+        client
+          .send_cmd("DOM.getDocument")
+          .root
+      end
+
+      def setup_devtools_client!
         @client = ChromeRemote.client host: host,
                                       port: @use_proxy ? DEVTOOLS_PROXY_PORT : port
         @client.send_cmd "Network.enable"
