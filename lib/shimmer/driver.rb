@@ -16,7 +16,8 @@ module Capybara
       end
 
       def_delegators :browser, :current_url, :visit, :html,
-                     :evaluate_script, :execute_script, :save_screenshot, :reset!
+                     :evaluate_script, :execute_script, :save_screenshot, :reset!,
+                     :dismiss_modal, :accept_modal
 
       def refresh
         raise NotImplementedError
@@ -86,39 +87,6 @@ module Capybara
 
       def no_such_window_error
         raise Capybara::NotSupportedByDriverError, "Capybara::Driver::Base#no_such_window_error"
-      end
-
-      ##
-      #
-      # Execute the block, and then accept the modal opened.
-      # @param type [:alert, :confirm, :prompt]
-      # @option options [Numeric] :wait  How long to wait for the modal to appear after executing the block.
-      # @option options [String, Regexp] :text  Text to verify is in the message shown in the modal
-      # @option options [String] :with  Text to fill in in the case of a prompt
-      # @return [String]  the message shown in the modal
-      # @raise [Capybara::ModalNotFound]  if modal dialog hasn't been found
-      #
-      # TODO/andrewhao This is not a complete implementation, and has issues around single-threaded
-      # test runners where the alert dialog will block the thread that also runs the test.
-      def accept_modal(_type, **_options)
-        yield if block_given?
-        browser.send_cmd("Page.handleJavaScriptDialog", accept: true)
-      end
-
-      ##
-      #
-      # Execute the block, and then dismiss the modal opened.
-      # @param type [:alert, :confirm, :prompt]
-      # @option options [Numeric] :wait  How long to wait for the modal to appear after executing the block.
-      # @option options [String, Regexp] :text  Text to verify is in the message shown in the modal
-      # @return [String]  the message shown in the modal
-      # @raise [Capybara::ModalNotFound]  if modal dialog hasn't been found
-      #
-      # TODO/andrewhao This is not a complete implementation, and has issues around single-threaded
-      # test runners where the alert dialog will block the thread that also runs the test.
-      def dismiss_modal(_type, **_options)
-        yield if block_given?
-        browser.send_cmd("Page.handleJavaScriptDialog", accept: false)
       end
 
       def invalid_element_errors

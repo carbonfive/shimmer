@@ -47,6 +47,16 @@ module Capybara
           .value
       end
 
+      def accept_modal(_type, **_options)
+        yield if block_given?
+        client.send_cmd("Page.handleJavaScriptDialog", accept: true)
+      end
+
+      def dismiss_modal(_type, **_options)
+        yield if block_given?
+        client.send_cmd("Page.handleJavaScriptDialog", accept: false)
+      end
+
       def html
         html_for(backend_node_id: root_node.backendNodeId)
       end
@@ -94,6 +104,13 @@ module Capybara
         @client.send_cmd "Network.enable"
         @client.send_cmd "Page.enable"
         @client.send_cmd "DOM.enable"
+
+        # Automatically dismiss all dialogs
+        # TODO: This may need to be configurable, or activated on
+        # a test-by-test case basis
+        @client.on "Page.javascriptDialogOpening" do |params|
+          accept_modal(params["type"].to_sym)
+        end
 
         @client
       end
