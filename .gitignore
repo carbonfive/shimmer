@@ -7,3 +7,6 @@
 /spec/reports/
 /tmp/
 /.rubocop-*
+/.rspec_status
+logs/
+log/

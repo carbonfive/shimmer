@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "shimmer"
+require "pry"
+
+is_headless = ARGV[0] == "--headless"
+puts ARGV
+
+Capybara.register_driver :shimmer do |app|
+  Capybara::Shimmer::Driver.new(app, use_proxy: true, headless: is_headless)
+end
+Capybara.current_driver = :shimmer
+Capybara.default_driver = :shimmer
+
+page = Capybara.current_session
+driver = page.driver
+driver.visit("http://www.csszengarden.com")
+Pry.start
+
+require "irb"
+IRB.start(__FILE__)

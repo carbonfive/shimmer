@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require_relative("./fixture_server")
+require_relative("./capybara_example")
+
+require "bundler"
+Bundler.require(:default, :development)
+
+fixture_server = FixtureServer.new
+fixture_server.start!
+
+at_exit do
+  fixture_server.stop!
+end
+
+require_relative("./register_capybara_drivers")
+
+driver = ARGV[0]
+if driver.nil?
+  puts "Need a driver: shimmer|chrome|headless_shimmer|headless_chrome|poltergeist"
+  exit 1
+end
+
+require "ruby-prof"
+require "progress_bar"
+
+total_iterations = 50
+
+tmp_dir = File.expand_path(File.join(__FILE__, "..", "..", "tmp"))
+FileUtils.mkdir_p tmp_dir
+
+progress_bar = ProgressBar.create(total: total_iterations)
+
+profile = RubyProf::Profile.new
+profile.exclude_common_methods!
+profile.start
+
+total_iterations.times do
+  progress_bar.increment
+  CapybaraExample.run(driver.to_sym, fixture_server)
+end
+
+result = profile.stop
+
+RubyProf::CallTreePrinter.new(result).print(path: tmp_dir, profile: driver)
