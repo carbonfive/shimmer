@@ -63,7 +63,7 @@ module Capybara
         default_args.append("--enable-logging=stdout") if browser_console_logging?
         default_args.concat(headless_args) if headless
         default_args.append("--remote-debugging-port=#{port}")
-        default_args.append("--window-size=#{window_height},#{window_width}")
+        default_args.append("--window-size=#{window_width},#{window_height}")
       end
 
       def browser_console_logging?
