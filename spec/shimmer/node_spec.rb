@@ -36,8 +36,8 @@ RSpec.describe Capybara::Shimmer::Node do
     end
   end
 
-  describe '#hover' do
-    it 'delegates to MouseDriver#move_to' do
+  describe "#hover" do
+    it "delegates to MouseDriver#move_to" do
       subject.hover
       expect(mouse_driver).to have_received(:move_to)
         .with(subject)

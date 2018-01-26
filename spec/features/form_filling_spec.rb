@@ -6,8 +6,7 @@ RSpec.describe "form filling", type: :feature do
   end
 
   { text: "Artisanal kale",
-    email: "bootstrap@example.com"
-  }.each do |input_type, initial_value|
+    email: "bootstrap@example.com" }.each do |input_type, initial_value|
     context "#{input_type} inputs" do
       let(:selector) { "#example-#{input_type}-input" }
       it "reads value" do
@@ -29,8 +28,8 @@ RSpec.describe "form filling", type: :feature do
 
       context "via action DSL" do
         it "fills in" do
-          fill_in("example-#{input_type}-input", with: 'Cruciferous veggies')
-          expect(find(selector).value).to eq('Cruciferous veggies')
+          fill_in("example-#{input_type}-input", with: "Cruciferous veggies")
+          expect(find(selector).value).to eq("Cruciferous veggies")
         end
       end
     end
@@ -45,7 +44,7 @@ RSpec.describe "form filling", type: :feature do
     context "via action DSL" do
       it "sets value" do
         select("2", from: "exampleSelect1")
-        expect(find('#exampleSelect1').value).to eq "2"
+        expect(find("#exampleSelect1").value).to eq "2"
       end
     end
   end

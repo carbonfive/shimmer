@@ -12,10 +12,9 @@ module CapybaraExample
     find_all("nav[role=navigation] a").map { |el| el[:href] }
     5.times do
       click_on "Mid Century Modern"
-      find('h1', text: "Mid Century Modern")
+      find("h1", text: "Mid Century Modern")
       click_on "Go back"
     end
     Capybara.reset_sessions!
   end
 end
-

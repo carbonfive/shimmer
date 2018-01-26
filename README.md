@@ -14,7 +14,7 @@ Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-pro
 
    1. Be sure to start up the proxy in a separate window before beginning the benchmark suite.
 
-       $ chrome-protocol-proxy
+        $ chrome-protocol-proxy
 
    (By default, the proxy listens on port 9223 and forwards traffic to the Chrome child process, listening on port 9222)
 
