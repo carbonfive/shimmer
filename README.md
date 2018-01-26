@@ -20,6 +20,21 @@ Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-pro
 
    2. Be sure to close Google Chrome completely - having any other open Chrome window or process will interfere with the runner.
 
+## Debugging/giving it a whirl
+
+You can play with the driver in a console session by simply launching it with:
+
+    $ ./bin/console
+
+This automatically instantiates a `Capybara::Shimmer::Driver` at `driver` in your interactive session:
+
+    [1] pry(main)> driver.visit('http://www.google.com')
+    [2] pry(main)> driver.find_css('input[aria-label=Search]').first.set('Bitcoin')
+
+The console can also be run headlessly with the `--headless` flag:
+
+    $ ./bin/console --headless
+
 ## Benchmarks
 
 There's a simple benchmark in place...
