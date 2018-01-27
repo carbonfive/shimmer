@@ -10,7 +10,7 @@ module Capybara
       end
 
       # Node is bound to Javascript `this`
-      def evaluate_js(js_fn, args=[])
+      def evaluate_js(js_fn, args = [])
         result = browser.send_cmd("Runtime.callFunctionOn",
                                   functionDeclaration: js_fn,
                                   objectId: devtools_remote_object_id,

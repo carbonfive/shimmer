@@ -5,11 +5,14 @@ require "timeout"
 module Capybara
   module Shimmer
     class Launcher
-      attr_reader :host, :port, :headless
 
-      def initialize(host:, port:, headless: false)
+      attr_reader :host, :port, :headless, :window_width, :window_height
+
+      def initialize(host:, port:, headless: false, window_width:, window_height:)
         @host = host
         @port = port
+        @window_width = window_width
+        @window_height = window_height
         @headless = headless
       end
 
@@ -68,14 +71,6 @@ module Capybara
 
       def browser_console_logging?
         true
-      end
-
-      def window_height
-        1080
-      end
-
-      def window_width
-        1920
       end
 
       def is_port_open?(ip, port)

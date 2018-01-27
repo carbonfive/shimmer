@@ -36,7 +36,7 @@ RSpec.describe "querying elements", type: :feature do
 
     it "does not find elements that are hidden" do
       expect {
-        find('.should-be-hidden')
+        find(".should-be-hidden")
       }.to raise_error(Capybara::ElementNotFound)
     end
   end
