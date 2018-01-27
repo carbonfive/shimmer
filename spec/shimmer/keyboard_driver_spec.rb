@@ -75,6 +75,23 @@ RSpec.describe Capybara::Shimmer::KeyboardDriver do
 
       subject.key_down("q")
     end
+
+    it "sends a special keycode (enter)" do
+      expect(browser)
+        .to receive(:send_cmd)
+        .with("Input.dispatchKeyEvent",
+              type: :keyDown,
+              windowsVirtualKeyCode: 13,
+              code: "Enter",
+              text: "\r",
+              unmodifiedText: "\r",
+              location: 0,
+              isKeypad: false,
+              key: "Enter")
+
+
+      subject.key_down(:enter)
+    end
   end
 
   describe "#key_up" do
