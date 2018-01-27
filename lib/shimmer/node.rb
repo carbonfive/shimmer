@@ -89,13 +89,22 @@ module Capybara
 
       def visible?
         javascript_bridge.evaluate_js("
-        function() {
-          const style = window.getComputedStyle(this);
-          const boundingBox = this.getBoundingClientRect();
-          const isComputedStyleVisible = style && style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
-          const isBoundingBoxZero = boundingBox.height === 0 || boundingBox.width === 0;
-          return !isBoundingBoxZero && isComputedStyleVisible;
-       }
+function() {
+  let element = this;
+  while (element) {
+    const style = window.getComputedStyle(element);
+    const isComputedStyleVisible =
+      style &&
+      style.display !== 'none' &&
+      style.visibility !== 'hidden' &&
+      style.opacity !== '0';
+    if (!isComputedStyleVisible) {
+      return false;
+    }
+    element = element.parentElement;
+  }
+  return true;
+}
                                       ")
       end
 
