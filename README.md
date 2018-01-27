@@ -49,9 +49,9 @@ end
 
    1. Be sure to start up the proxy in a separate window before beginning the benchmark suite.
 
-        $ chrome-protocol-proxy
+      ```$ chrome-protocol-proxy```
 
-   (By default, the proxy listens on port 9223 and forwards traffic to the Chrome child process, listening on port 9222)
+      (By default, the proxy listens on port 9223 and forwards traffic to the Chrome child process, listening on port 9222)
 
    2. Be sure to close Google Chrome completely - having any other open Chrome window or process will interfere with the runner.
 
