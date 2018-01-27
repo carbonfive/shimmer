@@ -8,20 +8,36 @@ module Capybara
       DEVTOOLS_PORT = 9222
       DEVTOOLS_PROXY_PORT = 9223
       DEVTOOLS_HOST = "localhost"
+      DEFAULT_WINDOW_WIDTH = 1920
+      DEFAULT_WINDOW_HEIGHT = 1080
 
       attr_reader :browser_pid, :port, :host, :client
       def_delegators :client, :wait_for, :send_cmd, :wait_for_with_either_match, :on
 
-      def initialize(port: DEVTOOLS_PORT, host: DEVTOOLS_HOST, use_proxy: false, headless: false, client: nil)
+      def initialize(port: DEVTOOLS_PORT,
+                     host: DEVTOOLS_HOST,
+                     use_proxy: false,
+                     headless: false,
+                     window_width: DEFAULT_WINDOW_WIDTH,
+                     window_height: DEFAULT_WINDOW_HEIGHT,
+                     client: nil)
         @port = port
         @host = host
+        @window_width = window_width
+        @window_height = window_height
         @headless = headless
         @use_proxy = use_proxy
         @client = client
       end
 
       def start
-        Launcher.new(host: @host, port: @port, headless: @headless).start
+        Launcher.new(
+          host: @host,
+          port: @port,
+          headless: @headless,
+          window_width: @window_width,
+          window_height: @window_height
+        ).start
         setup_devtools_client!
         self
       end

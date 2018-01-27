@@ -10,6 +10,41 @@ Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-pro
 
     $ go get -u github.com/wendigo/chrome-protocol-proxy
 
+## Usage in Capybara
+
+In your application's Capybara setup block (oftentimes, `spec/support/capybara.rb`), add the following:
+
+```ruby
+# First, register the driver
+Capybara.register_driver :shimmer do |app|
+  Capybara::Shimmer::Driver.new(app)
+end
+
+# If you want to run shimmer for all specs
+Capybara.default_driver = :shimmer
+
+# Only run shimmer for JS-based tests
+Capybara.javascript_driver = :shimmer
+```
+
+### Extended options
+
+You can pass extended options to further configure Shimmer:
+
+```ruby
+Capybara.register_driver :shimmer do |app|
+  Capybara::Shimmer::Driver.new(
+    app,
+    headless: true, # To run Chrome headlessly
+    window_width: <WIDTH_IN_PIXELS>, # Default: 1920
+    window_height: <HEIGHT_IN_PIXELS>, # Default: 1080
+    port: <DEVTOOLS_PORT>, # Default: 9222
+    host: <DEVTOOLS_HOST>,  # Remote Chrome DevTools host (default localhost)
+    proxy: true # Start Chrome on 9223, but use chrome-protocol-proxy on 9222
+  )
+end
+```
+
 ### Before running the test suite (benchmark)
 
    1. Be sure to start up the proxy in a separate window before beginning the benchmark suite.
