@@ -113,7 +113,8 @@ function() {
       def maybe_block_until_network_request_finishes!
         browser.wait_for("Network.requestWillBeSent", timeout: 0.1)
         browser.wait_for("Network.loadingFinished", timeout: 5)
-      rescue Timeout::Error
+      rescue Timeout::Error => _e
+        driver.logger.debug "No network event processed - continuing."
       end
 
       def box_model

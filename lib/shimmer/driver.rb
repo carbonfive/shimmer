@@ -5,7 +5,7 @@ require "shimmer/browser"
 module Capybara
   module Shimmer
     class Driver < Capybara::Driver::Base
-      attr_reader :browser, :options
+      attr_reader :browser, :options, :logger
       extend Forwardable
 
       def initialize(app, options = {})
@@ -13,6 +13,7 @@ module Capybara
         @options = options.dup
         @browser = supplied_browser || Capybara::Shimmer::Browser.new(@options).start
         @app     = app
+        @logger  = Logger.new(STDOUT)
       end
 
       def_delegators :browser, :current_url, :visit, :html,

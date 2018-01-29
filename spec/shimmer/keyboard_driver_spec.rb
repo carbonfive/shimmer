@@ -89,7 +89,6 @@ RSpec.describe Capybara::Shimmer::KeyboardDriver do
               isKeypad: false,
               key: "Enter")
 
-
       subject.key_down(:enter)
     end
   end

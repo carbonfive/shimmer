@@ -50,7 +50,7 @@ RSpec.describe Capybara::Shimmer::Browser do
       expect(client).to receive(:send_cmd)
         .with("Runtime.evaluate", expression: "1+1", returnByValue: false, awaitPromise: true)
         .and_return(double(result: double(type: "number", value: 2), exceptionDetails: nil))
-      result = subject.execute_script("1+1")
+      subject.execute_script("1+1")
     end
 
     it "raises error message exception for bad expression" do
