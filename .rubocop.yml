@@ -8,3 +8,6 @@ AllCops:
 
 Rails:
   Enabled: false
+Metrics/LineLength:
+  Exclude:
+    - "spec/**/*"

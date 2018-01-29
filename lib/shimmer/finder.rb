@@ -19,7 +19,10 @@ module Capybara
       def scoped_find_xpath(query, scope: root_node)
         query_fn = wrap_fn { build_xpath_query }
         javascript_bridge = JavascriptBridge.new(browser, devtools_remote_object_id: scope.devtools_remote_object_id)
-        array_result = javascript_bridge.evaluate_js(query_fn, [{ value: query }, { objectId: scope.devtools_remote_object_id }])
+        array_result = javascript_bridge.evaluate_js(query_fn, [
+          { value: query },
+          { objectId: scope.devtools_remote_object_id }
+        ])
         nodes_from_property_array(array_result)
       end
 

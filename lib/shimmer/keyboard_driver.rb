@@ -76,18 +76,13 @@ module Capybara
 
       def find_keyboard_definition(key_string)
         named_key = convert_to_named_keys(key_string)
-        definition = if named_key.is_a?(String)
-                       keyboard_layout[named_key]
-                     else
-                       keyboard_layout[named_key["key"]]
-                     end
+        definition = keyboard_layout[named_key["key"]]
         raise UnknownKeyError, "Unknown key: #{key_string}" if definition.nil?
         OpenStruct.new(definition)
       end
 
       # TODO/andrewhao Need to add modifier key detection
       def key_description_for_string(key_string)
-        shift = nil
         description = OpenStruct.new(
           key: "",
           keyCode: 0,
@@ -107,7 +102,7 @@ module Capybara
         description
       end
 
-      def convert_to_named_keys(key)
+      def convert_to_named_keys(key) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
         case key
         when :cancel, :help, :backspace, :tab, :clear, :return, :enter, :insert, :delete, :pause, :escape,
              :space, :end, :home, :left, :up, :right, :down, :semicolon,
@@ -136,7 +131,7 @@ module Capybara
         when :command
           { "key" => "Meta" }
         when String
-          key.to_s
+          { "key" => key.to_s }
         else
           raise Capybara::NotSupportedByDriverError
         end

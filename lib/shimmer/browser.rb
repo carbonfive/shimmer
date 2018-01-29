@@ -14,6 +14,7 @@ module Capybara
       attr_reader :browser_pid, :port, :host, :client
       def_delegators :client, :wait_for, :send_cmd, :wait_for_with_either_match, :on
 
+      # rubocop:disable Metrics/ParameterLists
       def initialize(port: DEVTOOLS_PORT,
                      host: DEVTOOLS_HOST,
                      use_proxy: false,
@@ -29,6 +30,7 @@ module Capybara
         @use_proxy = use_proxy
         @client = client
       end
+      # rubocop:enable Metrics/ParameterLists
 
       def start
         Launcher.new(

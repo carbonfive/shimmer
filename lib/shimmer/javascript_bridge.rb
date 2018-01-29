@@ -18,9 +18,9 @@ module Capybara
                                   arguments: args,
                                   userGesture: true,
                                   returnByValue: false)
-        if result.exceptionDetails
-          raise JavascriptEvaluationError, result.exceptionDetails.exception
-        elsif !result.result.value.nil?
+        raise JavascriptEvaluationError, result.exceptionDetails.exception if result.exceptionDetails
+
+        if !result.result.value.nil?
           result.result.value
         else
           result.result
@@ -28,7 +28,11 @@ module Capybara
       end
 
       def self.global_evaluate_script(browser, script, return_by_value: true)
-        returned = browser.send_cmd("Runtime.evaluate", expression: script, returnByValue: return_by_value, awaitPromise: true)
+        returned = browser.send_cmd("Runtime.evaluate",
+                                    expression: script,
+                                    returnByValue: return_by_value,
+                                    awaitPromise: true)
+
         raise JavascriptEvaluationError, returned.exceptionDetails.exception if returned.exceptionDetails
         if return_by_value
           returned.result.value

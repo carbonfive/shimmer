@@ -10,8 +10,8 @@ require_relative "../benchmark/fixture_server"
 
 fixture_server = FixtureServer.new
 
-headless = ENV.fetch('HEADLESS', 'false') == 'true'
-use_proxy = ENV.fetch('USE_PROXY', 'false') == 'true'
+headless = ENV.fetch("HEADLESS", "false") == "true"
+use_proxy = ENV.fetch("USE_PROXY", "false") == "true"
 
 Capybara.register_driver :shimmer do |app|
   Capybara::Shimmer::Driver.new(app, use_proxy: use_proxy, headless: headless)

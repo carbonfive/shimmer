@@ -5,7 +5,6 @@ require "timeout"
 module Capybara
   module Shimmer
     class Launcher
-
       attr_reader :host, :port, :headless, :window_width, :window_height
 
       def initialize(host:, port:, headless: false, window_width:, window_height:)
@@ -34,7 +33,7 @@ module Capybara
         @browser_pid
       end
 
-      def launcher_args
+      def launcher_args # rubocop:disable Metrics/MethodLength
         chrome_profile_path = File.join(@tmp_dir, "puppeteer_dev_profile-")
 
         default_args = [
@@ -74,19 +73,18 @@ module Capybara
       end
 
       def is_port_open?(ip, port)
-        begin
-          Timeout.timeout(4) do
-            begin
-              s = TCPSocket.new(ip, port)
-              s.close
-              return true
-            rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-              return false
-            end
+        Timeout.timeout(4) do
+          begin
+            s = TCPSocket.new(ip, port)
+            s.close
+            return true
+          rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => _e
+            return false
           end
-        rescue Timeout::Error
         end
 
+        false
+      rescue Timeout::Error => _e
         false
       end
 
