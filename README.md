@@ -4,6 +4,16 @@ An experimental Capybara driver for headless chrome.
 
 Why? Headless Chrome via Selenium is about 2x slower than Poltergeist, which is a bummer. How fast could it be if we cut out the middleman and talked directly to Chromedriver, or Chrome? The goal of Shimmer is to figure that out.
 
+## Architecture Overview
+
+In our headless Chrome case, [`chromedriver`](https://github.com/bayandin/chromedriver) acts as an intermediary between the Selenium WebDriver API and Chrome's internal [DevTools](https://chromedevtools.github.io/devtools-protocol/) API implementation. It's our hypothesis that the extra abstraction layer between the WebDriver and DevTools API is contributing to the performance slowdown when switching from Poltergeist to Chrome Headless.
+
+Shimmer bypasses the `chromedriver` middleman and directly communicates over a web socket to the DevTools API ([see documentation](https://chromedevtools.github.io/devtools-protocol/)). This is a real-time, event-based socket protocol.
+
+The DevTools API is highly experimental and subject to change. Expect it to break! We currently use the entirety of the APIs, not just the stable parts but the Tip-of-Tree master variations. Be sure to keep your Chrome updated to the latest at all times.
+
+Much of our implementation is derived and inspired from Google's Node-based [puppeteer](https://github.com/GoogleChrome/puppeteer/) project. Some code is also derived from the [chromedriver](https://github.com/bayandin/chromedriver) project.
+
 ## Setup
 
 Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-proxy) to see wire traffic over the remote debugging socket.
@@ -40,20 +50,19 @@ Capybara.register_driver :shimmer do |app|
     window_height: <HEIGHT_IN_PIXELS>, # Default: 1080
     port: <DEVTOOLS_PORT>, # Default: 9222
     host: <DEVTOOLS_HOST>,  # Remote Chrome DevTools host (default localhost)
-    proxy: true # Start Chrome on 9223, but use chrome-protocol-proxy on 9222
+    proxy: true # Start the browser on 9223, but open a client connection to chrome-protocol-proxy on 9222
   )
 end
 ```
 
-### Before running the test suite (benchmark)
+### Before running the benchmark
 
    1. Be sure to start up the proxy in a separate window before beginning the benchmark suite.
 
       ```$ chrome-protocol-proxy```
 
-      (By default, the proxy listens on port 9223 and forwards traffic to the Chrome child process, listening on port 9222)
+      (By default, the proxy listens to client connections on port 9222 and forwards traffic to the Chrome child process on port 9223)
 
-   2. Be sure to close Google Chrome completely - having any other open Chrome window or process will interfere with the runner.
 
 ## Debugging/giving it a whirl
 
