@@ -47,9 +47,10 @@ module Capybara
       def visit(path)
         client.send_cmd "Page.navigate", url: path
         client.wait_for do |event_name, event_params|
-          (event_name == "Page.lifecycleEvent" &&
-            (event_params["name"] == "load" ||
-              event_params["name"] == "networkIdle"))
+          (event_name == "Page.loadEventFired") ||
+            (event_name == "Page.lifecycleEvent" &&
+              (event_params["name"] == "load" ||
+                event_params["name"] == "networkIdle"))
         end
       end
 
