@@ -7,7 +7,7 @@ module Capybara
 
       DEVTOOLS_PORT = 9222
       DEVTOOLS_PROXY_PORT = 9223
-      DEVTOOLS_HOST = "localhost"
+      DEVTOOLS_HOST = "127.0.0.1"
       DEFAULT_WINDOW_WIDTH = 1920
       DEFAULT_WINDOW_HEIGHT = 1080
 
