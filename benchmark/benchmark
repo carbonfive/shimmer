@@ -38,10 +38,9 @@ end
 
 require_relative("./register_capybara_drivers")
 
-
 # Temporary Hashie complaint workaround until we subclass Mash
 # https://github.com/elastic/elasticsearch-rails/issues/666
-Hashie.logger = Logger.new('/dev/null')
+Hashie.logger = Logger.new("/dev/null")
 
 Benchmark.ips do |x|
   x.warmup = 10
