@@ -14,12 +14,6 @@ The DevTools API is highly experimental and subject to change. Expect it to brea
 
 Much of our implementation is derived and inspired from Google's Node-based [puppeteer](https://github.com/GoogleChrome/puppeteer/) project. Some code is also derived from the [chromedriver](https://github.com/bayandin/chromedriver) project.
 
-## Setup
-
-Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-proxy) to see wire traffic over the remote debugging socket.
-
-    $ go get -u github.com/wendigo/chrome-protocol-proxy
-
 ## Usage in Capybara
 
 In your application's Capybara setup block (oftentimes, `spec/support/capybara.rb`), add the following:
@@ -55,16 +49,21 @@ Capybara.register_driver :shimmer do |app|
 end
 ```
 
-### Before running the benchmark
+## Debugging the Chrome DevTools wire protocol
 
-   1. Be sure to start up the proxy in a separate window before beginning the benchmark suite.
+Install [`chrome-protocol-proxy`](https://github.com/wendigo/chrome-protocol-proxy) to see wire traffic over the remote debugging socket.
 
-      ```$ chrome-protocol-proxy```
+    $ go get -u github.com/wendigo/chrome-protocol-proxy
 
-      (By default, the proxy listens to client connections on port 9222 and forwards traffic to the Chrome child process on port 9223)
+Be sure to start up the proxy in a separate window before beginning the benchmark suite.
 
+    $ chrome-protocol-proxy
 
-## Debugging/giving it a whirl
+(By default, the proxy listens to client connections on port 9222 and forwards traffic to the Chrome child process on port 9223)
+
+Be sure to configure your Shimmer::Driver with the `proxy: true` flag.
+
+## Testing the driver in your console
 
 You can play with the driver in a console session by simply launching it with:
 
@@ -75,7 +74,7 @@ This automatically instantiates a `Capybara::Shimmer::Driver` at `driver` in you
     [1] pry(main)> driver.visit('http://www.google.com')
     [2] pry(main)> driver.find_css('input[aria-label=Search]').first.set('Bitcoin')
 
-The console can also be run headlessly with the `--headless` flag:
+The console runner can also be run headlessly with the `--headless` flag:
 
     $ ./bin/console --headless
 
