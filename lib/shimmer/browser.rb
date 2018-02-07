@@ -55,7 +55,7 @@ module Capybara
       end
 
       def reset!
-        client.send_cmd("Page.navigate", url: "about:blank")
+        visit("about:blank")
         client.send_cmd("Network.clearBrowserCookies")
       end
 
