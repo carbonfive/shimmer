@@ -18,7 +18,7 @@ module Capybara
       def start
         make_directories!
 
-        process_command = "'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' #{launcher_args.join(" ")}"
+        process_command = "'#{executable_path}' #{launcher_args.join(" ")}"
         @browser_pid = Process.spawn process_command, %i[out err] => "log/chrome.#{Time.now.to_f}.log"
         puts
         puts process_command
@@ -95,6 +95,15 @@ module Capybara
 
       def kill!
         Process.kill "INT", @browser_pid
+      end
+
+      # We currently only support Linux and Mac OSX
+      def executable_path
+        if RUBY_PLATFORM.match?(/darwin/)
+          "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        else
+          "google-chrome-stable"
+        end
       end
 
       def register_shutdown_hook!
