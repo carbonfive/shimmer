@@ -10,10 +10,10 @@ module Capybara
 
       def initialize(app, options = {})
         supplied_browser = options.delete(:browser)
+        @logger  = Logger.new(STDOUT)
         @options = options.dup
         @browser = supplied_browser || Capybara::Shimmer::Browser.new(@options).start
         @app     = app
-        @logger  = Logger.new(STDOUT)
       end
 
       def_delegators :browser, :current_url, :visit, :html,

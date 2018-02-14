@@ -1,0 +1,14 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+</head>
+<body id="fixture-deferred-page-render">
+  <div id="app">
+  </div>
+  <script>
+    setTimeout(function() {
+      document.querySelector("#app").innerHTML = "<p>New Page Content</p>";
+    }, 1000)
+  </script>
+</body>
+</html>

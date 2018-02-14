@@ -43,4 +43,18 @@ RSpec.describe Capybara::Shimmer::Node do
         .with(subject)
     end
   end
+
+  describe "#click" do
+    it "fires a click on the mouse" do
+      expect(mouse_driver).to receive(:click)
+      expect(browser).to receive(:wait_for).at_least(2).times
+      subject.click
+    end
+
+    it "rescues from a TimeoutError" do
+      expect(mouse_driver).to receive(:click)
+      expect(browser).to receive(:wait_for).and_raise(Timeout::Error)
+      subject.click
+    end
+  end
 end
