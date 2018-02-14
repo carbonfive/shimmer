@@ -57,4 +57,18 @@ RSpec.describe Capybara::Shimmer::Node do
       subject.click
     end
   end
+
+  describe "#all_text" do
+    it "delegates out to the JavascriptBridge" do
+      expect(javascript_bridge).to receive(:evaluate_js)
+        .and_return("Some Text")
+      expect(subject.all_text).to eq "Some Text"
+    end
+
+    it "normalizes whitespace" do
+      expect(javascript_bridge).to receive(:evaluate_js)
+        .and_return("Some    \n    Text")
+      expect(subject.all_text).to eq "Some Text"
+    end
+  end
 end

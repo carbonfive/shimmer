@@ -24,6 +24,14 @@ module Capybara
         javascript_bridge.evaluate_js("function() { return this.value }")
       end
 
+      def all_text
+        Capybara::Helpers.normalize_whitespace(javascript_bridge.evaluate_js("function() { return this.textContent }"))
+      end
+
+      def visible_text
+        visible? ? all_text : ""
+      end
+
       def click
         scroll_into_view_if_needed!
         mouse_driver.click(self)
