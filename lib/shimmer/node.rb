@@ -6,7 +6,7 @@
 module Capybara
   module Shimmer
     class Node < Capybara::RackTest::Node
-      attr_reader :devtools_node_id, :devtools_backend_node_id, :devtools_remote_object_id
+      attr_reader :devtools_node_id, :devtools_backend_node_id, :devtools_remote_object_id, :logger
 
       def initialize(driver,
                      native,
@@ -17,10 +17,19 @@ module Capybara
         @devtools_node_id = devtools_node_id
         @devtools_backend_node_id = devtools_backend_node_id
         @devtools_remote_object_id = devtools_remote_object_id
+        @logger = Logger.new(STDOUT)
       end
 
       def value
         javascript_bridge.evaluate_js("function() { return this.value }")
+      end
+
+      def all_text
+        Capybara::Helpers.normalize_whitespace(javascript_bridge.evaluate_js("function() { return this.textContent }"))
+      end
+
+      def visible_text
+        visible? ? all_text : ""
       end
 
       def click
@@ -114,7 +123,7 @@ function() {
         browser.wait_for("Network.requestWillBeSent", timeout: 0.1)
         browser.wait_for("Network.loadingFinished", timeout: 5)
       rescue Timeout::Error => _e
-        driver.logger.debug "No network event processed - continuing."
+        logger.debug "No network event processed - continuing."
       end
 
       def box_model

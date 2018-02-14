@@ -12,6 +12,14 @@
 
 <body>
   <a class="mouse-hover-target" href="/">Hover Me</a>
+  <div class="mouse-click-target">Click Me</div>
+
+  <script>
+    document.querySelector('.mouse-click-target')
+      .addEventListener('click', function(e) {
+        e.target.innerHTML = "Clicked!"
+      });
+  </script>
 </body>
 
 </html>
