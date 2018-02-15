@@ -29,7 +29,7 @@ module Capybara
       end
 
       def visible_text
-        visible? ? all_text : ""
+        visible? ? inner_text : ""
       end
 
       def click
@@ -118,6 +118,10 @@ function() {
       end
 
       private
+
+      def inner_text
+        javascript_bridge.evaluate_js("function() { return this.innerText }")
+      end
 
       def maybe_block_until_network_request_finishes!
         browser.wait_for("Network.requestWillBeSent", timeout: 0.1)
