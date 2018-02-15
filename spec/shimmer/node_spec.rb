@@ -58,6 +58,28 @@ RSpec.describe Capybara::Shimmer::Node do
     end
   end
 
+  describe "#visible_text" do
+    it "delegates out to the JavascriptBridge" do
+      expect(javascript_bridge).to receive(:evaluate_js)
+        .with(Capybara::Shimmer::JavascriptExpressions::NODE_VISIBLE)
+        .and_return(true)
+      expect(javascript_bridge).to receive(:evaluate_js)
+        .with(Capybara::Shimmer::JavascriptExpressions::INNER_TEXT)
+        .and_return("Some Text")
+      expect(subject.visible_text).to eq "Some Text"
+    end
+
+    it "normalizes whitespace" do
+      allow(javascript_bridge).to receive(:evaluate_js)
+        .with(Capybara::Shimmer::JavascriptExpressions::NODE_VISIBLE)
+        .and_return(true)
+      expect(javascript_bridge).to receive(:evaluate_js)
+        .with(Capybara::Shimmer::JavascriptExpressions::INNER_TEXT)
+        .and_return("Some    \n    Text")
+      expect(subject.visible_text).to eq "Some Text"
+    end
+  end
+
   describe "#all_text" do
     it "delegates out to the JavascriptBridge" do
       expect(javascript_bridge).to receive(:evaluate_js)
