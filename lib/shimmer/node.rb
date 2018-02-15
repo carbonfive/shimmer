@@ -25,11 +25,13 @@ module Capybara
       end
 
       def all_text
-        Capybara::Helpers.normalize_whitespace(javascript_bridge.evaluate_js("function() { return this.textContent }"))
+        text = javascript_bridge.evaluate_js("function() { return this.textContent }")
+        Capybara::Helpers.normalize_whitespace(text)
       end
 
       def visible_text
-        visible? ? inner_text : ""
+        text = visible? ? inner_text : ""
+        Capybara::Helpers.normalize_whitespace(text)
       end
 
       def click
@@ -97,30 +99,13 @@ module Capybara
       end
 
       def visible?
-        javascript_bridge.evaluate_js("
-function() {
-  let element = this;
-  while (element) {
-    const style = window.getComputedStyle(element);
-    const isComputedStyleVisible =
-      style &&
-      style.display !== 'none' &&
-      style.visibility !== 'hidden' &&
-      style.opacity !== '0';
-    if (!isComputedStyleVisible) {
-      return false;
-    }
-    element = element.parentElement;
-  }
-  return true;
-}
-                                      ")
+        javascript_bridge.evaluate_js(Capybara::Shimmer::JavascriptExpressions::NODE_VISIBLE)
       end
 
       private
 
       def inner_text
-        javascript_bridge.evaluate_js("function() { return this.innerText }")
+        javascript_bridge.evaluate_js(Capybara::Shimmer::JavascriptExpressions::INNER_TEXT)
       end
 
       def maybe_block_until_network_request_finishes!
