@@ -44,6 +44,24 @@ RSpec.describe "querying elements", type: :feature do
       hidden = find(".should-be-hidden", visible: false)
       expect(hidden.text).to eq ""
     end
+
+    context "textual content" do
+      it "returns nested text" do
+        body = find("#design-selection nav")
+        expect(body.text).to include "Mid Century Modern by Andrew Lohman"
+      end
+
+      it "does not return text in script tags" do
+        visit "/script_tags.html"
+        body = find("body")
+        expect(body.text).to eq ""
+      end
+
+      it "does not display text in hidden elements" do
+        body = find("body")
+        expect(body.text).to_not include "Should be hidden"
+      end
+    end
   end
 
   describe "#all" do

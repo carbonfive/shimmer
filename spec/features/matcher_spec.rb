@@ -5,6 +5,11 @@ RSpec.describe "RSpec matcher DSL", type: :feature do
   end
 
   describe "#has_content?" do
+    it "does not return text in script tags" do
+      visit "/script_tags.html"
+      expect(page).to_not have_content("This text is in a script tag")
+    end
+
     it "matches with page text" do
       visit "/index.html"
       expect(page).to have_content("CSS Zen Garden")
@@ -12,7 +17,7 @@ RSpec.describe "RSpec matcher DSL", type: :feature do
 
     it "finds text that is deferred" do
       visit "/deferred_page_render.html"
-      Capybara.using_wait_time 2 do
+      Capybara.using_wait_time 5 do
         expect(page).to have_content("New Page Content")
       end
     end
